@@ -1,0 +1,20 @@
+name: Auto Attach Bat to Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  upload-asset:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Upload Bat to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: HD2_ini_Tuner.bat
