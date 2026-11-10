@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Helldivers 2 · settings.ini 参数说明</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--bd:#e2e6eb;--fg:#1b2026;--dim:#6b7480;--accent:#2563eb;--val:#0f766e}
+@media(prefers-color-scheme:dark){:root{--bg:#101317;--card:#191e24;--bd:#2b333c;--fg:#e6e9ed;--dim:#98a2ad;--accent:#60a5fa;--val:#5eead4}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif}
+.wrap{max-width:1400px;margin:0 auto;padding:28px 22px 60px}
+header h1{margin:0 0 6px;font-size:22px;font-weight:650;letter-spacing:.2px}
+header .sub{color:var(--dim);font-size:13px;margin:0}
+header .sub code{color:var(--val)}
+.toolbar{position:sticky;top:0;z-index:9;background:var(--bg);padding:14px 0 12px;margin-top:18px;border-bottom:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#q{flex:1 1 300px;min-width:220px;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--fg);font-size:14px;outline:none}
+#q:focus{border-color:var(--accent)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:6px 11px;border:1px solid var(--bd);border-radius:20px;background:var(--card);color:var(--dim);cursor:pointer;font-size:12.5px;user-select:none}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn{padding:7px 11px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--dim);cursor:pointer;font-size:12.5px}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+#count{color:var(--dim);font-size:12.5px;margin-left:auto;white-space:nowrap}
+.group{margin:16px 0;border:1px solid var(--bd);border-radius:10px;background:var(--card);overflow:hidden}
+.group[hidden]{display:none}
+.group>summary{cursor:pointer;padding:12px 16px;display:flex;align-items:baseline;gap:12px;list-style:none;background:var(--card)}
+.group>summary::-webkit-details-marker{display:none}
+.group>summary::before{content:"▸";color:var(--dim);font-size:12px;display:inline-block;transition:transform .15s}
+.group[open]>summary::before{transform:rotate(90deg)}
+.gname{font-weight:650;font-size:15px}
+.gdesc{color:var(--dim);font-size:12.5px;flex:1}
+.gn{color:var(--dim);font-size:12px;font-variant-numeric:tabular-nums}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:10px;padding:0 14px 14px}
+.item{border:1px solid var(--bd);border-radius:8px;padding:11px 13px;background:var(--bg);min-width:0}
+.item[hidden]{display:none}
+.r1{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:5px}
+.key{font:600 13px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--fg);word-break:break-all}
+.badge{font-size:11px;padding:1px 7px;border-radius:10px;white-space:nowrap;--c:#64748b;color:var(--c);border:1px solid color-mix(in srgb,var(--c) 45%,transparent);background:color-mix(in srgb,var(--c) 10%,transparent)}
+.b确定{--c:#16a34a}.b推定{--c:#2563eb}.b推测{--c:#d97706}.b猜测{--c:#64748b}
+.impact{font-size:11px;color:var(--dim);border:1px solid var(--bd);border-radius:5px;padding:1px 6px;white-space:nowrap}
+.src{font-size:11px;color:var(--dim);margin-left:auto;white-space:nowrap}
+.path{font:11px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--dim);word-break:break-all;margin-bottom:6px}
+.val{display:flex;gap:8px;align-items:baseline;font-size:12px;margin-bottom:7px}
+.val>span{color:var(--dim);flex:none}
+.val>code{font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--val);word-break:break-all}
+.def{margin:0;font-size:13px;color:var(--fg)}
+.cond{margin-top:6px;font-size:12px;color:var(--dim)}
+.cond span{display:inline-block;margin-right:7px;padding:0 5px;border:1px solid var(--bd);border-radius:4px;font-size:11px}
+footer{margin-top:26px;padding:16px 18px;border:1px solid var(--bd);border-radius:10px;background:var(--card);color:var(--dim);font-size:12.5px}
+footer b{color:var(--fg);font-weight:600}
+footer ul{margin:8px 0 0;padding-left:20px}
+footer li{margin:3px 0}
+</style></head><body><div class="wrap">
+<header><h1>Helldivers 2 · <code>settings.ini</code> 参数说明</h1>
+<p class="sub">出厂值取自 Steam 校验恢复的默认配置（build <code>19464</code>，191 行，CRLF，无 BOM），逐键读取；共 121 项 / 10 组。本表只列出厂值与参数释义，不含当前值或改动建议。</p></header>
+<div class="toolbar">
+<input id="q" type="search" placeholder="搜索参数名 / 路径 / 定义 / 影响（支持中文）" autocomplete="off">
+<div class="chips" id="chips"><span class="chip on" data-c="">全部</span><span class="chip" data-c="确定">确定</span><span class="chip" data-c="推定">推定</span><span class="chip" data-c="推测">推测</span><span class="chip" data-c="猜测">猜测</span></div>
+<button class="btn" id="ea">展开全部</button><button class="btn" id="ca">折叠全部</button>
+<span id="count"></span></div>
+<main><details class="group" open><summary><span class="gname">启动与项目</span><span class="gdesc">顶层启动包、脚本、资源与引擎版本。</span><span class="gn">11</span></summary><div class="items"><article class="item" data-conf="确定" data-search="pre_boot_package pre_boot_package &quot;packages/pre_boot&quot; 预启动阶段加载的资源包路径。 — 确定 — ">
+<div class="r1"><code class="key">pre_boot_package</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">pre_boot_package</div>
+<div class="val"><span>出厂值</span><code>&quot;packages/pre_boot&quot;</code></div>
+<p class="def">预启动阶段加载的资源包路径。</p></article>
+<article class="item" data-conf="确定" data-search="boot_package boot_package &quot;packages/boot&quot; 启动阶段加载的资源包路径。 — 确定 — ">
+<div class="r1"><code class="key">boot_package</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">boot_package</div>
+<div class="val"><span>出厂值</span><code>&quot;packages/boot&quot;</code></div>
+<p class="def">启动阶段加载的资源包路径。</p></article>
+<article class="item" data-conf="确定" data-search="boot_script boot_script &quot;boot&quot; 启动脚本名。 — 确定 — ">
+<div class="r1"><code class="key">boot_script</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">boot_script</div>
+<div class="val"><span>出厂值</span><code>&quot;boot&quot;</code></div>
+<p class="def">启动脚本名。</p></article>
+<article class="item" data-conf="推定" data-search="autoload autoload false 启动期自动加载开关。 — 推定 — ">
+<div class="r1"><code class="key">autoload</code><span class="badge b推定">推定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">autoload</div>
+<div class="val"><span>出厂值</span><code>false</code></div>
+<p class="def">启动期自动加载开关。</p></article>
+<article class="item" data-conf="推测" data-search="import_reverse_forward_axis import_reverse_forward_axis false 导入时是否反转前向轴。 — 推测 — ">
+<div class="r1"><code class="key">import_reverse_forward_axis</code><span class="badge b推测">推测</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">import_reverse_forward_axis</div>
+<div class="val"><span>出厂值</span><code>false</code></div>
+<p class="def">导入时是否反转前向轴。</p></article>
+<article class="item" data-conf="推测" data-search="support_plugin_reload support_plugin_reload false 插件热重载开关。 — 推测 — ">
+<div class="r1"><code class="key">support_plugin_reload</code><span class="badge b推测">推测</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">support_plugin_reload</div>
+<div class="val"><span>出厂值</span><code>false</code></div>
+<p class="def">插件热重载开关。</p></article>
+<article class="item" data-conf="确定" data-search="render_config render_config &quot;rendering/renderer&quot; 渲染配置资源路径。 — 确定 — ">
+<div class="r1"><code class="key">render_config</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">render_config</div>
+<div class="val"><span>出厂值</span><code>&quot;rendering/renderer&quot;</code></div>
+<p class="def">渲染配置资源路径。</p></article>
+<article class="item" data-conf="确定" data-search="performance_hud performance_hud &quot;rendering/performance_hud&quot; 性能 HUD 资源路径。 — 确定 — ">
+<div class="r1"><code class="key">performance_hud</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">performance_hud</div>
+<div class="val"><span>出厂值</span><code>&quot;rendering/performance_hud&quot;</code></div>
+<p class="def">性能 HUD 资源路径。</p></article>
+<article class="item" data-conf="确定" data-search="wwise_project wwise_project &quot;../wwise/new_testament.wproj&quot; Wwise 工程文件路径。 — 确定 — ">
+<div class="r1"><code class="key">wwise_project</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">wwise_project</div>
+<div class="val"><span>出厂值</span><code>&quot;../wwise/new_testament.wproj&quot;</code></div>
+<p class="def">Wwise 工程文件路径。</p></article>
+<article class="item" data-conf="确定" data-search="project_name project_name &quot;Helldivers 2&quot; 项目名称。 — 确定 — ">
+<div class="r1"><code class="key">project_name</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">project_name</div>
+<div class="val"><span>出厂值</span><code>&quot;Helldivers 2&quot;</code></div>
+<p class="def">项目名称。</p></article>
+<article class="item" data-conf="确定" data-search="stingray_version stingray_version &quot;1.8.0.0&quot; Stingray 引擎版本号（1.8.0.0）。 — 确定 — ">
+<div class="r1"><code class="key">stingray_version</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">stingray_version</div>
+<div class="val"><span>出厂值</span><code>&quot;1.8.0.0&quot;</code></div>
+<p class="def">Stingray 引擎版本号（1.8.0.0）。</p></article></div></details>
+<details class="group" open><summary><span class="gname">网络与 EOS</span><span class="gdesc">网络日志路径与 EOS 详细日志开关。</span><span class="gn">2</span></summary><div class="items"><article class="item" data-conf="确定" data-search="log network.win32.log &quot;%APPDATA%/Arrowhead/Helldivers2/network_logs/network-%DATE%-%TIME%-%SESSION%-%HOSTNAME%.ndp&quot; 网络日志输出路径模板；%DATE%、%TIME%、%SESSION%、%HOSTNAME% 为运行时占位符。 磁盘·写日志 确定 — ">
+<div class="r1"><code class="key">log</code><span class="badge b确定">确定</span><span class="impact">磁盘·写日志</span><span class="src">—</span></div>
+<div class="path">network.win32.log</div>
+<div class="val"><span>出厂值</span><code>&quot;%APPDATA%/Arrowhead/Helldivers2/network_logs/network-%DATE%-%TIME%-%SESSION%-%HOSTNAME%.ndp&quot;</code></div>
+<p class="def">网络日志输出路径模板；%DATE%、%TIME%、%SESSION%、%HOSTNAME% 为运行时占位符。</p></article>
+<article class="item" data-conf="推定" data-search="verbose eos.verbose true EOS 详细日志开关。开启会持续写盘，产生额外磁盘 IO；关闭对帧数影响很小，主要是减少日志噪音。 磁盘·写日志 推定 通用 通用">
+<div class="r1"><code class="key">verbose</code><span class="badge b推定">推定</span><span class="impact">磁盘·写日志</span><span class="src">通用</span></div>
+<div class="path">eos.verbose</div>
+<div class="val"><span>出厂值</span><code>true</code></div>
+<p class="def">EOS 详细日志开关。开启会持续写盘，产生额外磁盘 IO；关闭对帧数影响很小，主要是减少日志噪音。</p><div class="cond"><span>适用条件</span>通用</div></article></div></details>
+<details class="group" open><summary><span class="gname">错误级别与回退资源</span><span class="gdesc">缺失资源的告警级别与各类回退资源路径。</span><span class="gn">12</span></summary><div class="items"><article class="item" data-conf="确定" data-search="missing_material error_levels.missing_material &quot;warning&quot; 材质缺失时的告警级别。 — 确定 — ">
+<div class="r1"><code class="key">missing_material</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">error_levels.missing_material</div>
+<div class="val"><span>出厂值</span><code>&quot;warning&quot;</code></div>
+<p class="def">材质缺失时的告警级别。</p></article>
+<article class="item" data-conf="确定" data-search="semantic_mismatch error_levels.semantic_mismatch &quot;warning&quot; 语义不匹配时的告警级别。 — 确定 — ">
+<div class="r1"><code class="key">semantic_mismatch</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">error_levels.semantic_mismatch</div>
+<div class="val"><span>出厂值</span><code>&quot;warning&quot;</code></div>
+<p class="def">语义不匹配时的告警级别。</p></article>
+<article class="item" data-conf="确定" data-search="fallback_resource_package error_levels.fallback_resource_package &quot;packages/fallback_resources&quot; 缺失资源回退包路径。 — 确定 — ">
+<div class="r1"><code class="key">fallback_resource_package</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">error_levels.fallback_resource_package</div>
+<div class="val"><span>出厂值</span><code>&quot;packages/fallback_resources&quot;</code></div>
+<p class="def">缺失资源回退包路径。</p></article>
+<article class="item" data-conf="确定" data-search="fallback_resource error_levels.missing_resources.particles.fallback_resource &quot;core/fallback_resources/missing_particles&quot; 粒子资源缺失时使用的回退资源路径。 — 确定 — ">
+<div class="r1"><code class="key">fallback_resource</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">error_levels.missing_resources.particles.fallback_resource</div>
+<div class="val"><span>出厂值</span><code>&quot;core/fallback_resources/missing_particles&quot;</code></div>
+<p class="def">粒子资源缺失时使用的回退资源路径。</p></article>
+<article class="item" data-conf="确定" data-search="fallback_resource error_levels.missing_resources.speedtree.fallback_resource &quot;content/fallback_resources/missing_speedtree&quot; SpeedTree资源缺失时使用的回退资源路径。 — 确定 — ">
+<div class="r1"><code class="key">fallback_resource</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">error_levels.missing_resources.speedtree.fallback_resource</div>
+<div class="val"><span>出厂值</span><code>&quot;content/fallback_resources/missing_speedtree&quot;</code></div>
+<p class="def">SpeedTree资源缺失时使用的回退资源路径。</p></article>
+<article class="item" data-conf="确定" data-search="fallback_resource error_levels.missing_resources.flow.fallback_resource &quot;core/fallback_resources/missing_flow&quot; Flow资源缺失时使用的回退资源路径。 — 确定 — ">
+<div class="r1"><code class="key">fallback_resource</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">error_levels.missing_resources.flow.fallback_resource</div>
+<div class="val"><span>出厂值</span><code>&quot;core/fallback_resources/missing_flow&quot;</code></div>
+<p class="def">Flow资源缺失时使用的回退资源路径。</p></article>
+<article class="item" data-conf="确定" data-search="fallback_resource error_levels.missing_resources.unit.fallback_resource &quot;content/fallback_resources/missing_unit&quot; Unit资源缺失时使用的回退资源路径。 — 确定 — ">
+<div class="r1"><code class="key">fallback_resource</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">error_levels.missing_resources.unit.fallback_resource</div>
+<div class="val"><span>出厂值</span><code>&quot;content/fallback_resources/missing_unit&quot;</code></div>
+<p class="def">Unit资源缺失时使用的回退资源路径。</p></article>
+<article class="item" data-conf="确定" data-search="fallback_resource error_levels.missing_resources.shader.fallback_resource &quot;missing_shader&quot; 着色器资源缺失时使用的回退资源路径。 — 确定 — ">
+<div class="r1"><code class="key">fallback_resource</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">error_levels.missing_resources.shader.fallback_resource</div>
+<div class="val"><span>出厂值</span><code>&quot;missing_shader&quot;</code></div>
+<p class="def">着色器资源缺失时使用的回退资源路径。</p></article>
+<article class="item" data-conf="确定" data-search="fallback_resource error_levels.missing_resources.prefab.fallback_resource &quot;content/fallback_resources/missing_prefab&quot; Prefab资源缺失时使用的回退资源路径。 — 确定 — ">
+<div class="r1"><code class="key">fallback_resource</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">error_levels.missing_resources.prefab.fallback_resource</div>
+<div class="val"><span>出厂值</span><code>&quot;content/fallback_resources/missing_prefab&quot;</code></div>
+<p class="def">Prefab资源缺失时使用的回退资源路径。</p></article>
+<article class="item" data-conf="确定" data-search="fallback_resource error_levels.missing_resources.texture.fallback_resource &quot;core/fallback_resources/missing_texture&quot; 纹理资源缺失时使用的回退资源路径。 — 确定 — ">
+<div class="r1"><code class="key">fallback_resource</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">error_levels.missing_resources.texture.fallback_resource</div>
+<div class="val"><span>出厂值</span><code>&quot;core/fallback_resources/missing_texture&quot;</code></div>
+<p class="def">纹理资源缺失时使用的回退资源路径。</p></article>
+<article class="item" data-conf="确定" data-search="fallback_resource error_levels.missing_resources.material.fallback_resource &quot;core/fallback_resources/missing_material&quot; 材质资源缺失时使用的回退资源路径。 — 确定 — ">
+<div class="r1"><code class="key">fallback_resource</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">error_levels.missing_resources.material.fallback_resource</div>
+<div class="val"><span>出厂值</span><code>&quot;core/fallback_resources/missing_material&quot;</code></div>
+<p class="def">材质资源缺失时使用的回退资源路径。</p></article>
+<article class="item" data-conf="确定" data-search="fallback_resource error_levels.missing_resources.level.fallback_resource &quot;content/fallback_resources/missing_level&quot; 关卡资源缺失时使用的回退资源路径。 — 确定 — ">
+<div class="r1"><code class="key">fallback_resource</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">error_levels.missing_resources.level.fallback_resource</div>
+<div class="val"><span>出厂值</span><code>&quot;content/fallback_resources/missing_level&quot;</code></div>
+<p class="def">关卡资源缺失时使用的回退资源路径。</p></article></div></details>
+<details class="group" open><summary><span class="gname">Wwise 音频</span><span class="gdesc">IO 设备、声音引擎与共享平台的缓冲、并发与队列参数。</span><span class="gn">13</span></summary><div class="items"><article class="item" data-conf="猜测" data-search="max_cache_ratio wwise.io_device.max_cache_ratio 1 Wwise 缓存占比上限，对应 fMaxCacheRatio。判定逻辑没有可靠公开说明，改动后果未知。 — 猜测 通用 判定逻辑未知">
+<div class="r1"><code class="key">max_cache_ratio</code><span class="badge b猜测">猜测</span><span class="impact">—</span><span class="src">通用</span></div>
+<div class="path">wwise.io_device.max_cache_ratio</div>
+<div class="val"><span>出厂值</span><code>1</code></div>
+<p class="def">Wwise 缓存占比上限，对应 fMaxCacheRatio。判定逻辑没有可靠公开说明，改动后果未知。</p></article>
+<article class="item" data-conf="确定" data-search="memory_alignment wwise.io_device.memory_alignment 64 Wwise IO 内存对齐字节数，对应 uIOMemoryAlignment，出厂 64、SDK 默认 4。改动会影响 IO 请求对齐方式。 音频·IO对齐 确定 通用 无改动依据">
+<div class="r1"><code class="key">memory_alignment</code><span class="badge b确定">确定</span><span class="impact">音频·IO对齐</span><span class="src">通用</span></div>
+<div class="path">wwise.io_device.memory_alignment</div>
+<div class="val"><span>出厂值</span><code>64</code></div>
+<p class="def">Wwise IO 内存对齐字节数，对应 uIOMemoryAlignment，出厂 64、SDK 默认 4。改动会影响 IO 请求对齐方式。</p></article>
+<article class="item" data-conf="确定" data-search="target_buffering_length wwise.io_device.target_buffering_length 720 Wwise 目标预读缓冲，对应 fTargetAutoStmBufferLength，单位毫秒。调大必须同步加大 memory_size，否则目标不可达。 音频·预读 确定 通用 改动会破坏配套项">
+<div class="r1"><code class="key">target_buffering_length</code><span class="badge b确定">确定</span><span class="impact">音频·预读</span><span class="src">通用</span></div>
+<div class="path">wwise.io_device.target_buffering_length</div>
+<div class="val"><span>出厂值</span><code>720</code></div>
+<p class="def">Wwise 目标预读缓冲，对应 fTargetAutoStmBufferLength，单位毫秒。调大必须同步加大 memory_size，否则目标不可达。</p><div class="cond"><span>适用条件</span>改动会破坏配套项</div></article>
+<article class="item" data-conf="确定" data-search="memory_size wwise.io_device.memory_size 26214400 Wwise 流式 IO 缓冲池字节数，对应 AkDeviceSettings::uIOMemorySize。块数 = 此值 / granularity，出厂 25MB/128KB = 200 块。影响音频预读能力，不直接改帧数。 音频·缓冲 确定 按硬件 物理内存16GB以上且系统盘为SSD">
+<div class="r1"><code class="key">memory_size</code><span class="badge b确定">确定</span><span class="impact">音频·缓冲</span><span class="src">按硬件</span></div>
+<div class="path">wwise.io_device.memory_size</div>
+<div class="val"><span>出厂值</span><code>26214400</code></div>
+<p class="def">Wwise 流式 IO 缓冲池字节数，对应 AkDeviceSettings::uIOMemorySize。块数 = 此值 / granularity，出厂 25MB/128KB = 200 块。影响音频预读能力，不直接改帧数。</p><div class="cond"><span>适用条件</span>物理内存16GB以上且系统盘为SSD</div></article>
+<article class="item" data-conf="确定" data-search="max_concurrent_io wwise.io_device.max_concurrent_io 200 Wwise 并发 IO 请求数，对应 uMaxConcurrentIO；SDK 默认 8，出厂 200 与出厂缓冲块数配套。降并发未验证有效。 音频·IO 确定 按硬件 无改动依据">
+<div class="r1"><code class="key">max_concurrent_io</code><span class="badge b确定">确定</span><span class="impact">音频·IO</span><span class="src">按硬件</span></div>
+<div class="path">wwise.io_device.max_concurrent_io</div>
+<div class="val"><span>出厂值</span><code>200</code></div>
+<p class="def">Wwise 并发 IO 请求数，对应 uMaxConcurrentIO；SDK 默认 8，出厂 200 与出厂缓冲块数配套。降并发未验证有效。</p></article>
+<article class="item" data-conf="确定" data-search="granularity wwise.io_device.granularity 131072 Wwise 单次 IO 请求字节数，对应 uGranularity，出厂 128KB、SDK 默认 16KB。改它会破坏 memory_size / max_concurrent_io 的块数配套。 音频·IO块 确定 通用 改动会破坏配套项">
+<div class="r1"><code class="key">granularity</code><span class="badge b确定">确定</span><span class="impact">音频·IO块</span><span class="src">通用</span></div>
+<div class="path">wwise.io_device.granularity</div>
+<div class="val"><span>出厂值</span><code>131072</code></div>
+<p class="def">Wwise 单次 IO 请求字节数，对应 uGranularity，出厂 128KB、SDK 默认 16KB。改它会破坏 memory_size / max_concurrent_io 的块数配套。</p><div class="cond"><span>适用条件</span>改动会破坏配套项</div></article>
+<article class="item" data-conf="确定" data-search="use_blocking_io wwise.io_device.use_blocking_io false Wwise IO 调度模式，false 为 deferred。切 true 会退化为阻塞式调度并额外拉线程，增加 CPU 占用。 CPU·音频线程 确定 通用 无改动依据">
+<div class="r1"><code class="key">use_blocking_io</code><span class="badge b确定">确定</span><span class="impact">CPU·音频线程</span><span class="src">通用</span></div>
+<div class="path">wwise.io_device.use_blocking_io</div>
+<div class="val"><span>出厂值</span><code>false</code></div>
+<p class="def">Wwise IO 调度模式，false 为 deferred。切 true 会退化为阻塞式调度并额外拉线程，增加 CPU 占用。</p></article>
+<article class="item" data-conf="确定" data-search="command_queue_size wwise.sound_engine.command_queue_size 524288 Wwise 音频命令队列字节数，对应 uCommandQueueSize，出厂 512KB 已是 SDK 默认 2 倍。队列满会丢音频命令，出厂已宽裕。 音频·命令 确定 通用 无改动依据">
+<div class="r1"><code class="key">command_queue_size</code><span class="badge b确定">确定</span><span class="impact">音频·命令</span><span class="src">通用</span></div>
+<div class="path">wwise.sound_engine.command_queue_size</div>
+<div class="val"><span>出厂值</span><code>524288</code></div>
+<p class="def">Wwise 音频命令队列字节数，对应 uCommandQueueSize，出厂 512KB 已是 SDK 默认 2 倍。队列满会丢音频命令，出厂已宽裕。</p></article>
+<article class="item" data-conf="确定" data-search="pool_size wwise.sound_engine.pool_size 33554432 Wwise 声音引擎默认内存池，对应 uDefaultPoolSize，出厂 32MB 已是 SDK 默认 2 倍。影响可同时驻留的声音对象数量。 内存·音频池 确定 通用 无改动依据">
+<div class="r1"><code class="key">pool_size</code><span class="badge b确定">确定</span><span class="impact">内存·音频池</span><span class="src">通用</span></div>
+<div class="path">wwise.sound_engine.pool_size</div>
+<div class="val"><span>出厂值</span><code>33554432</code></div>
+<p class="def">Wwise 声音引擎默认内存池，对应 uDefaultPoolSize，出厂 32MB 已是 SDK 默认 2 倍。影响可同时驻留的声音对象数量。</p></article>
+<article class="item" data-conf="确定" data-search="num_samples_per_frame wwise.sound_engine.num_samples_per_frame 1024 音频渲染每块样本数，对应 uNumSamplesPerFrame；1024 在 48kHz 约 21.3ms。改 2048 是掩盖型手段，代价是音频延迟 +21ms，不解决链路问题。 音频·延迟 确定 通用 仅在音频畸变且排除链路问题后">
+<div class="r1"><code class="key">num_samples_per_frame</code><span class="badge b确定">确定</span><span class="impact">音频·延迟</span><span class="src">通用</span></div>
+<div class="path">wwise.sound_engine.num_samples_per_frame</div>
+<div class="val"><span>出厂值</span><code>1024</code></div>
+<p class="def">音频渲染每块样本数，对应 uNumSamplesPerFrame；1024 在 48kHz 约 21.3ms。改 2048 是掩盖型手段，代价是音频延迟 +21ms，不解决链路问题。</p><div class="cond"><span>适用条件</span>仅在音频畸变且排除链路问题后</div></article>
+<article class="item" data-conf="确定" data-search="num_refills_in_voice wwise.shared_platform.num_refills_in_voice 4 流式声音缓冲补充次数，对应 uNumRefillsInVoice，SDK 默认 4。影响流式音频的缓冲深度与抗抖动能力。 音频·缓冲 确定 通用 无改动依据">
+<div class="r1"><code class="key">num_refills_in_voice</code><span class="badge b确定">确定</span><span class="impact">音频·缓冲</span><span class="src">通用</span></div>
+<div class="path">wwise.shared_platform.num_refills_in_voice</div>
+<div class="val"><span>出厂值</span><code>4</code></div>
+<p class="def">流式声音缓冲补充次数，对应 uNumRefillsInVoice，SDK 默认 4。影响流式音频的缓冲深度与抗抖动能力。</p></article>
+<article class="item" data-conf="确定" data-search="data_dir wwise.data_dir &quot;content/audio&quot; 音频数据目录。 — 确定 — ">
+<div class="r1"><code class="key">data_dir</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">wwise.data_dir</div>
+<div class="val"><span>出厂值</span><code>&quot;content/audio&quot;</code></div>
+<p class="def">音频数据目录。</p></article>
+<article class="item" data-conf="确定" data-search="enabled wwise.enabled true Wwise 音频总开关。 音频·总开关 确定 — ">
+<div class="r1"><code class="key">enabled</code><span class="badge b确定">确定</span><span class="impact">音频·总开关</span><span class="src">—</span></div>
+<div class="path">wwise.enabled</div>
+<div class="val"><span>出厂值</span><code>true</code></div>
+<p class="def">Wwise 音频总开关。</p></article></div></details>
+<details class="group" open><summary><span class="gname">Win32 运行时与调试设施</span><span class="gdesc">日志、崩溃上报、调试 UI、输入与画质档位配置路径。</span><span class="gn">21</span></summary><div class="items"><article class="item" data-conf="推定" data-search="crs_enabled win32.crs_enabled true Arrowhead CRS 崩溃上报总开关。 — 推定 — ">
+<div class="r1"><code class="key">crs_enabled</code><span class="badge b推定">推定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.crs_enabled</div>
+<div class="val"><span>出厂值</span><code>true</code></div>
+<p class="def">Arrowhead CRS 崩溃上报总开关。</p></article>
+<article class="item" data-conf="确定" data-search="floating_point_exceptions win32.floating_point_exceptions true 浮点异常陷阱开关；x86 上开启不增加额外指令开销。 CPU·无额外开销 确定 — ">
+<div class="r1"><code class="key">floating_point_exceptions</code><span class="badge b确定">确定</span><span class="impact">CPU·无额外开销</span><span class="src">—</span></div>
+<div class="path">win32.floating_point_exceptions</div>
+<div class="val"><span>出厂值</span><code>true</code></div>
+<p class="def">浮点异常陷阱开关；x86 上开启不增加额外指令开销。</p></article>
+<article class="item" data-conf="确定" data-search="window_name win32.window_name &quot;HELLDIVERS™ 2&quot; 窗口标题文本。 — 确定 — ">
+<div class="r1"><code class="key">window_name</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.window_name</div>
+<div class="val"><span>出厂值</span><code>&quot;HELLDIVERS™ 2&quot;</code></div>
+<p class="def">窗口标题文本。</p></article>
+<article class="item" data-conf="确定" data-search="local_console_log win32.local_console_log &quot;%APPDATA%/Arrowhead/Helldivers2/logs/console_%DATE%-%TIME%-%SESSION%-%HOSTNAME%.txt&quot; 控制台日志路径模板；%DATE% 等为运行时占位符。 磁盘·写日志 确定 — ">
+<div class="r1"><code class="key">local_console_log</code><span class="badge b确定">确定</span><span class="impact">磁盘·写日志</span><span class="src">—</span></div>
+<div class="path">win32.local_console_log</div>
+<div class="val"><span>出厂值</span><code>&quot;%APPDATA%/Arrowhead/Helldivers2/logs/console_%DATE%-%TIME%-%SESSION%-%HOSTNAME%.txt&quot;</code></div>
+<p class="def">控制台日志路径模板；%DATE% 等为运行时占位符。</p></article>
+<article class="item" data-conf="确定" data-search="crash_dump win32.crash_dump true 崩溃时生成 MiniDump 的开关。 — 确定 — ">
+<div class="r1"><code class="key">crash_dump</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.crash_dump</div>
+<div class="val"><span>出厂值</span><code>true</code></div>
+<p class="def">崩溃时生成 MiniDump 的开关。</p></article>
+<article class="item" data-conf="确定" data-search="crash_dump_path win32.crash_dump_path &quot;%APPDATA%/Arrowhead/Helldivers2/dumps/dump-%DATE%-%TIME%-%SESSION%-%HOSTNAME%.dmp&quot; MiniDump 输出路径模板。 — 确定 — ">
+<div class="r1"><code class="key">crash_dump_path</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.crash_dump_path</div>
+<div class="val"><span>出厂值</span><code>&quot;%APPDATA%/Arrowhead/Helldivers2/dumps/dump-%DATE%-%TIME%-%SESSION%-%HOSTNAME%.dmp&quot;</code></div>
+<p class="def">MiniDump 输出路径模板。</p></article>
+<article class="item" data-conf="确定" data-search="resource_memory_usage win32.resource_memory_usage &quot;%APPDATA%/Arrowhead/Helldivers2/resource_memory_usage.txt&quot; 资源内存用量报告的输出路径。 — 确定 — ">
+<div class="r1"><code class="key">resource_memory_usage</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.resource_memory_usage</div>
+<div class="val"><span>出厂值</span><code>&quot;%APPDATA%/Arrowhead/Helldivers2/resource_memory_usage.txt&quot;</code></div>
+<p class="def">资源内存用量报告的输出路径。</p></article>
+<article class="item" data-conf="确定" data-search="panic_folder_path win32.panic_folder_path &quot;%APPDATA%/Arrowhead/Helldivers2/panic/&quot; panic 转储目录。 — 确定 — ">
+<div class="r1"><code class="key">panic_folder_path</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.panic_folder_path</div>
+<div class="val"><span>出厂值</span><code>&quot;%APPDATA%/Arrowhead/Helldivers2/panic/&quot;</code></div>
+<p class="def">panic 转储目录。</p></article>
+<article class="item" data-conf="确定" data-search="user_settings_version win32.user_settings_version 15 画质档位配置文件的版本号。 — 确定 — ">
+<div class="r1"><code class="key">user_settings_version</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.user_settings_version</div>
+<div class="val"><span>出厂值</span><code>15</code></div>
+<p class="def">画质档位配置文件的版本号。</p></article>
+<article class="item" data-conf="确定" data-search="user_settings win32.user_settings &quot;%APPDATA%/Arrowhead/Helldivers2/user_settings.config&quot; 画质档位配置文件路径（user_settings.config）；与 settings.ini 不互通。 — 确定 — ">
+<div class="r1"><code class="key">user_settings</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.user_settings</div>
+<div class="val"><span>出厂值</span><code>&quot;%APPDATA%/Arrowhead/Helldivers2/user_settings.config&quot;</code></div>
+<p class="def">画质档位配置文件路径（user_settings.config）；与 settings.ini 不互通。</p></article>
+<article class="item" data-conf="确定" data-search="save_dir win32.save_dir &quot;%APPDATA%/Arrowhead/Helldivers2/saves&quot; 存档目录。 — 确定 — ">
+<div class="r1"><code class="key">save_dir</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.save_dir</div>
+<div class="val"><span>出厂值</span><code>&quot;%APPDATA%/Arrowhead/Helldivers2/saves&quot;</code></div>
+<p class="def">存档目录。</p></article>
+<article class="item" data-conf="推定" data-search="dearimgui_enabled win32.dearimgui_enabled true 调试 UI（Dear ImGui）开关；性能 HUD 由它绘制。 — 推定 — ">
+<div class="r1"><code class="key">dearimgui_enabled</code><span class="badge b推定">推定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.dearimgui_enabled</div>
+<div class="val"><span>出厂值</span><code>true</code></div>
+<p class="def">调试 UI（Dear ImGui）开关；性能 HUD 由它绘制。</p></article>
+<article class="item" data-conf="确定" data-search="dearimgui_settings_path win32.dearimgui_settings_path &quot;%APPDATA%/Arrowhead/Helldivers2/dearimgui.ini&quot; 调试 UI 配置文件路径。 — 确定 — ">
+<div class="r1"><code class="key">dearimgui_settings_path</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.dearimgui_settings_path</div>
+<div class="val"><span>出厂值</span><code>&quot;%APPDATA%/Arrowhead/Helldivers2/dearimgui.ini&quot;</code></div>
+<p class="def">调试 UI 配置文件路径。</p></article>
+<article class="item" data-conf="猜测" data-search="mouse_polling_rate win32.input.mouse_polling_rate 0 鼠标轮询率；0 的具体判定逻辑未见公开说明。 输入 猜测 — ">
+<div class="r1"><code class="key">mouse_polling_rate</code><span class="badge b猜测">猜测</span><span class="impact">输入</span><span class="src">—</span></div>
+<div class="path">win32.input.mouse_polling_rate</div>
+<div class="val"><span>出厂值</span><code>0</code></div>
+<p class="def">鼠标轮询率；0 的具体判定逻辑未见公开说明。</p></article>
+<article class="item" data-conf="推测" data-search="mouse_extrapolation win32.input.mouse_extrapolation false 鼠标外推开关。 输入 推测 — ">
+<div class="r1"><code class="key">mouse_extrapolation</code><span class="badge b推测">推测</span><span class="impact">输入</span><span class="src">—</span></div>
+<div class="path">win32.input.mouse_extrapolation</div>
+<div class="val"><span>出厂值</span><code>false</code></div>
+<p class="def">鼠标外推开关。</p></article>
+<article class="item" data-conf="确定" data-search="data_path win32.crs.data_path &quot;%APPDATA%/Arrowhead/Helldivers2/crash_data&quot; CRS 崩溃数据目录。 — 确定 — ">
+<div class="r1"><code class="key">data_path</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.crs.data_path</div>
+<div class="val"><span>出厂值</span><code>&quot;%APPDATA%/Arrowhead/Helldivers2/crash_data&quot;</code></div>
+<p class="def">CRS 崩溃数据目录。</p></article>
+<article class="item" data-conf="确定" data-search="capture_image win32.crs.capture_image true 崩溃时是否附带截屏。 — 确定 — ">
+<div class="r1"><code class="key">capture_image</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.crs.capture_image</div>
+<div class="val"><span>出厂值</span><code>true</code></div>
+<p class="def">崩溃时是否附带截屏。</p></article>
+<article class="item" data-conf="确定" data-search="capture_video win32.crs.capture_video false 崩溃时是否附带视频。 — 确定 — ">
+<div class="r1"><code class="key">capture_video</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.crs.capture_video</div>
+<div class="val"><span>出厂值</span><code>false</code></div>
+<p class="def">崩溃时是否附带视频。</p></article>
+<article class="item" data-conf="猜测" data-search="kill_timeout_seconds win32.crs.kill_timeout_seconds -1 CRS 上报进程的终止等待时长；-1 的具体语义未见公开说明。 — 猜测 — ">
+<div class="r1"><code class="key">kill_timeout_seconds</code><span class="badge b猜测">猜测</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.crs.kill_timeout_seconds</div>
+<div class="val"><span>出厂值</span><code>-1</code></div>
+<p class="def">CRS 上报进程的终止等待时长；-1 的具体语义未见公开说明。</p></article>
+<article class="item" data-conf="确定" data-search="qa_guid win32.crs.qa_guid [&quot;a9fef46c-80e2-4e59-a595-4d9c5fdbdcae&quot;  &quot;6a08b938-4f67-44d9-85fe-d7bdd0c214d2&quot;] QA 环境的 CRS 上报 GUID 列表。 — 确定 — ">
+<div class="r1"><code class="key">qa_guid</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.crs.qa_guid</div>
+<div class="val"><span>出厂值</span><code>[&quot;a9fef46c-80e2-4e59-a595-4d9c5fdbdcae&quot;  &quot;6a08b938-4f67-44d9-85fe-d7bdd0c214d2&quot;]</code></div>
+<p class="def">QA 环境的 CRS 上报 GUID 列表。</p></article>
+<article class="item" data-conf="确定" data-search="prod_guid win32.crs.prod_guid [&quot;67125a5f-9eb4-46e1-8fe2-4595dc69745a&quot;  &quot;8d5e9b75-42f0-4827-8061-717db0bb2112&quot;] 正式环境的 CRS 上报 GUID 列表。 — 确定 — ">
+<div class="r1"><code class="key">prod_guid</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.crs.prod_guid</div>
+<div class="val"><span>出厂值</span><code>[&quot;67125a5f-9eb4-46e1-8fe2-4595dc69745a&quot;  &quot;8d5e9b75-42f0-4827-8061-717db0bb2112&quot;]</code></div>
+<p class="def">正式环境的 CRS 上报 GUID 列表。</p></article></div></details>
+<details class="group" open><summary><span class="gname">线程池与作业队列</span><span class="gdesc">作业线程保留数与各阶段队列容量。</span><span class="gn">4</span></summary><div class="items"><article class="item" data-conf="推定" data-search="num_reserved_threads win32.thread_pool.num_reserved_threads 2 线程池保留线程数。引擎作业线程数 = 逻辑处理器总数 − 此值，32 逻辑核时 2 对应 30 条、18 对应 14 条。影响 CPU 并行吞吐与 fork-join 尾延迟。已限制可用逻辑核集合时，按 reserved = 逻辑核总数 − 目标线程数 重新计算；限制方式包括 CPU Sets、BIOS 或处理器亲和性，与 CPU 厂商和核心拓扑无关。 CPU·并行 推定 按硬件 已限制游戏可用逻辑核集合时才需要改">
+<div class="r1"><code class="key">num_reserved_threads</code><span class="badge b推定">推定</span><span class="impact">CPU·并行</span><span class="src">按硬件</span></div>
+<div class="path">win32.thread_pool.num_reserved_threads</div>
+<div class="val"><span>出厂值</span><code>2</code></div>
+<p class="def">线程池保留线程数。引擎作业线程数 = 逻辑处理器总数 − 此值，32 逻辑核时 2 对应 30 条、18 对应 14 条。影响 CPU 并行吞吐与 fork-join 尾延迟。已限制可用逻辑核集合时，按 reserved = 逻辑核总数 − 目标线程数 重新计算；限制方式包括 CPU Sets、BIOS 或处理器亲和性，与 CPU 厂商和核心拓扑无关。</p><div class="cond"><span>适用条件</span>已限制游戏可用逻辑核集合时才需要改</div></article>
+<article class="item" data-conf="推定" data-search="use_syncapi win32.thread_pool.use_syncapi true 线程池空闲时用阻塞等待代替自旋。降低空闲 CPU 占用，忙时无差异。 CPU·空闲 推定 通用 无改动依据">
+<div class="r1"><code class="key">use_syncapi</code><span class="badge b推定">推定</span><span class="impact">CPU·空闲</span><span class="src">通用</span></div>
+<div class="path">win32.thread_pool.use_syncapi</div>
+<div class="val"><span>出厂值</span><code>true</code></div>
+<p class="def">线程池空闲时用阻塞等待代替自旋。降低空闲 CPU 占用，忙时无差异。</p></article>
+<article class="item" data-conf="推定" data-search="max_num_jobs max_num_jobs 8192 作业队列容量上限，不是并发度。8192 在 14 条 worker 上不会成为瓶颈。 CPU·队列 推定 通用 无改动依据">
+<div class="r1"><code class="key">max_num_jobs</code><span class="badge b推定">推定</span><span class="impact">CPU·队列</span><span class="src">通用</span></div>
+<div class="path">max_num_jobs</div>
+<div class="val"><span>出厂值</span><code>8192</code></div>
+<p class="def">作业队列容量上限，不是并发度。8192 在 14 条 worker 上不会成为瓶颈。</p></article>
+<article class="item" data-conf="推定" data-search="max_num_jobs_data_dir max_num_jobs_data_dir 32768 数据目录加载阶段的作业队列容量上限，不是并发度。 CPU·加载队列 推定 通用 无改动依据">
+<div class="r1"><code class="key">max_num_jobs_data_dir</code><span class="badge b推定">推定</span><span class="impact">CPU·加载队列</span><span class="src">通用</span></div>
+<div class="path">max_num_jobs_data_dir</div>
+<div class="val"><span>出厂值</span><code>32768</code></div>
+<p class="def">数据目录加载阶段的作业队列容量上限，不是并发度。</p></article></div></details>
+<details class="group" open><summary><span class="gname">纹理流送与显存</span><span class="gdesc">常驻 mip、单帧上传/拷贝节流、流送池与 D3D12 堆上限。</span><span class="gn">17</span></summary><div class="items"><article class="item" data-conf="确定" data-search="streaming_texture_pool_size win32.streaming_texture_pool_size 0 Stingray 官方段：可流送纹理共享内存上限，MB，官方默认 256。置 0 表示由 texture_streaming 扩展段接管；填非 0 会与扩展段冲突。 显存·池 确定 通用 无改动依据">
+<div class="r1"><code class="key">streaming_texture_pool_size</code><span class="badge b确定">确定</span><span class="impact">显存·池</span><span class="src">通用</span></div>
+<div class="path">win32.streaming_texture_pool_size</div>
+<div class="val"><span>出厂值</span><code>0</code></div>
+<p class="def">Stingray 官方段：可流送纹理共享内存上限，MB，官方默认 256。置 0 表示由 texture_streaming 扩展段接管；填非 0 会与扩展段冲突。</p></article>
+<article class="item" data-conf="确定" data-search="streaming_buffer_size win32.streaming_buffer_size 0 Stingray 官方段：从磁盘载入新纹理的缓冲，MB，官方默认 24。置 0 表示由扩展段接管。 内存·载入 确定 通用 无改动依据">
+<div class="r1"><code class="key">streaming_buffer_size</code><span class="badge b确定">确定</span><span class="impact">内存·载入</span><span class="src">通用</span></div>
+<div class="path">win32.streaming_buffer_size</div>
+<div class="val"><span>出厂值</span><code>0</code></div>
+<p class="def">Stingray 官方段：从磁盘载入新纹理的缓冲，MB，官方默认 24。置 0 表示由扩展段接管。</p></article>
+<article class="item" data-conf="猜测" data-search="inv_texel_density win32.render_settings.texture_streaming.inv_texel_density 4 纹素密度相关项。无可靠来源说明其判定与单位，改动后果未知。 — 猜测 通用 判定逻辑未知">
+<div class="r1"><code class="key">inv_texel_density</code><span class="badge b猜测">猜测</span><span class="impact">—</span><span class="src">通用</span></div>
+<div class="path">win32.render_settings.texture_streaming.inv_texel_density</div>
+<div class="val"><span>出厂值</span><code>4</code></div>
+<p class="def">纹素密度相关项。无可靠来源说明其判定与单位，改动后果未知。</p></article>
+<article class="item" data-conf="推定" data-search="max_frame_upload_bytes win32.render_settings.texture_streaming.max_frame_upload_bytes 16777216 单帧 CPU→GPU 上传上限，16MB，走 PCIe。这是防抖动的节流阀，放宽会放大单帧 PCIe 尖峰。 帧时间·尖峰 推定 通用 无改动依据">
+<div class="r1"><code class="key">max_frame_upload_bytes</code><span class="badge b推定">推定</span><span class="impact">帧时间·尖峰</span><span class="src">通用</span></div>
+<div class="path">win32.render_settings.texture_streaming.max_frame_upload_bytes</div>
+<div class="val"><span>出厂值</span><code>16777216</code></div>
+<p class="def">单帧 CPU→GPU 上传上限，16MB，走 PCIe。这是防抖动的节流阀，放宽会放大单帧 PCIe 尖峰。</p></article>
+<article class="item" data-conf="猜测" data-search="max_mip win32.render_settings.texture_streaming.max_mip 0 流送 mip 上限。无可靠来源说明取值语义，改动后果未知。 — 猜测 通用 判定逻辑未知">
+<div class="r1"><code class="key">max_mip</code><span class="badge b猜测">猜测</span><span class="impact">—</span><span class="src">通用</span></div>
+<div class="path">win32.render_settings.texture_streaming.max_mip</div>
+<div class="val"><span>出厂值</span><code>0</code></div>
+<p class="def">流送 mip 上限。无可靠来源说明取值语义，改动后果未知。</p></article>
+<article class="item" data-conf="推定" data-search="memory_budget_mb win32.render_settings.texture_streaming.memory_budget_mb 1536 流送纹理常驻 mip 数据量目标，MB。调高提升纹理清晰度、减少反复载入，代价是显存驻留上升；超过显存会引发频繁驱逐并严重掉帧。 显存·驻留↑ 推定 按硬件 显存充足且系统盘为SSD时">
+<div class="r1"><code class="key">memory_budget_mb</code><span class="badge b推定">推定</span><span class="impact">显存·驻留↑</span><span class="src">按硬件</span></div>
+<div class="path">win32.render_settings.texture_streaming.memory_budget_mb</div>
+<div class="val"><span>出厂值</span><code>1536</code></div>
+<p class="def">流送纹理常驻 mip 数据量目标，MB。调高提升纹理清晰度、减少反复载入，代价是显存驻留上升；超过显存会引发频繁驱逐并严重掉帧。</p><div class="cond"><span>适用条件</span>显存充足且系统盘为SSD时</div></article>
+<article class="item" data-conf="推定" data-search="max_frame_updates win32.render_settings.texture_streaming.max_frame_updates 32 单帧允许处理的流送更新条数。翻倍会放大渲染线程偶发尖峰；该取舍取决于纹理加载速度与帧时间余量。 帧时间·尖峰 推定 通用 取决于纹理加载速度与帧时间余量">
+<div class="r1"><code class="key">max_frame_updates</code><span class="badge b推定">推定</span><span class="impact">帧时间·尖峰</span><span class="src">通用</span></div>
+<div class="path">win32.render_settings.texture_streaming.max_frame_updates</div>
+<div class="val"><span>出厂值</span><code>32</code></div>
+<p class="def">单帧允许处理的流送更新条数。翻倍会放大渲染线程偶发尖峰；该取舍取决于纹理加载速度与帧时间余量。</p><div class="cond"><span>适用条件</span>取决于纹理加载速度与帧时间余量</div></article>
+<article class="item" data-conf="猜测" data-search="streaming_update_quick_drops win32.render_settings.texture_streaming.streaming_update_quick_drops false 流送更新快速丢弃开关。判定逻辑未公开，改动后果未知。 — 猜测 通用 判定逻辑未知">
+<div class="r1"><code class="key">streaming_update_quick_drops</code><span class="badge b猜测">猜测</span><span class="impact">—</span><span class="src">通用</span></div>
+<div class="path">win32.render_settings.texture_streaming.streaming_update_quick_drops</div>
+<div class="val"><span>出厂值</span><code>false</code></div>
+<p class="def">流送更新快速丢弃开关。判定逻辑未公开，改动后果未知。</p></article>
+<article class="item" data-conf="推测" data-search="memory_threshold_fast_shrink win32.render_settings.texture_streaming.memory_threshold_fast_shrink 33554432 触发流送池快速收缩的内存阈值，出厂 32MB。命名可推方向，具体判定未公开。 — 推测 通用 判定逻辑未知">
+<div class="r1"><code class="key">memory_threshold_fast_shrink</code><span class="badge b推测">推测</span><span class="impact">—</span><span class="src">通用</span></div>
+<div class="path">win32.render_settings.texture_streaming.memory_threshold_fast_shrink</div>
+<div class="val"><span>出厂值</span><code>33554432</code></div>
+<p class="def">触发流送池快速收缩的内存阈值，出厂 32MB。命名可推方向，具体判定未公开。</p></article>
+<article class="item" data-conf="推测" data-search="drop_dynamic_textures_on_renderer_reload win32.render_settings.texture_streaming.drop_dynamic_textures_on_renderer_reload false 渲染器重载时是否丢弃动态纹理。改动可能引发重载后纹理缺失。 画质·重载 推测 通用 无改动依据">
+<div class="r1"><code class="key">drop_dynamic_textures_on_renderer_reload</code><span class="badge b推测">推测</span><span class="impact">画质·重载</span><span class="src">通用</span></div>
+<div class="path">win32.render_settings.texture_streaming.drop_dynamic_textures_on_renderer_reload</div>
+<div class="val"><span>出厂值</span><code>false</code></div>
+<p class="def">渲染器重载时是否丢弃动态纹理。改动可能引发重载后纹理缺失。</p></article>
+<article class="item" data-conf="推测" data-search="max_frame_copy_bytes win32.render_settings.texture_streaming.max_frame_copy_bytes 67108864 单帧 GPU 内拷贝上限，字节，走显存带宽。通常不是瓶颈；放宽对帧数影响有限，小显存机器可能放大单帧压力。 显存·拷贝 推测 按硬件 通用">
+<div class="r1"><code class="key">max_frame_copy_bytes</code><span class="badge b推测">推测</span><span class="impact">显存·拷贝</span><span class="src">按硬件</span></div>
+<div class="path">win32.render_settings.texture_streaming.max_frame_copy_bytes</div>
+<div class="val"><span>出厂值</span><code>67108864</code></div>
+<p class="def">单帧 GPU 内拷贝上限，字节，走显存带宽。通常不是瓶颈；放宽对帧数影响有限，小显存机器可能放大单帧压力。</p><div class="cond"><span>适用条件</span>通用</div></article>
+<article class="item" data-conf="推测" data-search="minimum_shrink_delay win32.render_settings.texture_streaming.minimum_shrink_delay 30 流送池收缩前的等待时长。延长减少池重分配与抖动，代价是显存回收变慢。 显存·抖动↓ 推测 按硬件 通用">
+<div class="r1"><code class="key">minimum_shrink_delay</code><span class="badge b推测">推测</span><span class="impact">显存·抖动↓</span><span class="src">按硬件</span></div>
+<div class="path">win32.render_settings.texture_streaming.minimum_shrink_delay</div>
+<div class="val"><span>出厂值</span><code>30</code></div>
+<p class="def">流送池收缩前的等待时长。延长减少池重分配与抖动，代价是显存回收变慢。</p><div class="cond"><span>适用条件</span>通用</div></article>
+<article class="item" data-conf="推测" data-search="initialize_at_max win32.render_settings.texture_streaming.initialize_at_max false 是否按最高 mip 初始化纹理。改动会改变首次加载行为与首帧显存占用。 显存·首帧 推测 通用 无改动依据">
+<div class="r1"><code class="key">initialize_at_max</code><span class="badge b推测">推测</span><span class="impact">显存·首帧</span><span class="src">通用</span></div>
+<div class="path">win32.render_settings.texture_streaming.initialize_at_max</div>
+<div class="val"><span>出厂值</span><code>false</code></div>
+<p class="def">是否按最高 mip 初始化纹理。改动会改变首次加载行为与首帧显存占用。</p></article>
+<article class="item" data-conf="猜测" data-search="minimum_unseen_delay win32.render_settings.texture_streaming.minimum_unseen_delay 60 纹理未被看见多久后进入卸载候选。具体判定未公开，改动后果未知。 显存·卸载 猜测 通用 判定逻辑未知">
+<div class="r1"><code class="key">minimum_unseen_delay</code><span class="badge b猜测">猜测</span><span class="impact">显存·卸载</span><span class="src">通用</span></div>
+<div class="path">win32.render_settings.texture_streaming.minimum_unseen_delay</div>
+<div class="val"><span>出厂值</span><code>60</code></div>
+<p class="def">纹理未被看见多久后进入卸载候选。具体判定未公开，改动后果未知。</p></article>
+<article class="item" data-conf="推测" data-search="minimum_unload_delay win32.render_settings.texture_streaming.minimum_unload_delay 2 纹理最短驻留时间，单位推断为秒。延长可抑制反复驱逐/重载，减少帧时间抖动，代价是显存常驻量上升。 显存·驻留↑ 推测 按硬件 通用">
+<div class="r1"><code class="key">minimum_unload_delay</code><span class="badge b推测">推测</span><span class="impact">显存·驻留↑</span><span class="src">按硬件</span></div>
+<div class="path">win32.render_settings.texture_streaming.minimum_unload_delay</div>
+<div class="val"><span>出厂值</span><code>2</code></div>
+<p class="def">纹理最短驻留时间，单位推断为秒。延长可抑制反复驱逐/重载，减少帧时间抖动，代价是显存常驻量上升。</p><div class="cond"><span>适用条件</span>通用</div></article>
+<article class="item" data-conf="推定" data-search="texture_heap_usage_limit win32.renderer.d3d12.texture_heap_usage_limit 5376 D3D12 纹理堆驻留上限，MB。决定纹理可申请的显存堆大小；超过物理显存会退化到共享内存，帧数灾难性下降。 显存·上限 推定 按硬件 必须匹配显存">
+<div class="r1"><code class="key">texture_heap_usage_limit</code><span class="badge b推定">推定</span><span class="impact">显存·上限</span><span class="src">按硬件</span></div>
+<div class="path">win32.renderer.d3d12.texture_heap_usage_limit</div>
+<div class="val"><span>出厂值</span><code>5376</code></div>
+<p class="def">D3D12 纹理堆驻留上限，MB。决定纹理可申请的显存堆大小；超过物理显存会退化到共享内存，帧数灾难性下降。</p><div class="cond"><span>适用条件</span>必须匹配显存</div></article>
+<article class="item" data-conf="推定" data-search="scratch_space win32.renderer.d3d12.scratch_space 128 D3D12 临时与上传缓冲区，MB。出厂 128MB 已宽裕，通常不是瓶颈；过小可能导致上传等待。 显存·上传缓冲 推定 通用 无改动依据">
+<div class="r1"><code class="key">scratch_space</code><span class="badge b推定">推定</span><span class="impact">显存·上传缓冲</span><span class="src">通用</span></div>
+<div class="path">win32.renderer.d3d12.scratch_space</div>
+<div class="val"><span>出厂值</span><code>128</code></div>
+<p class="def">D3D12 临时与上传缓冲区，MB。出厂 128MB 已宽裕，通常不是瓶颈；过小可能导致上传等待。</p></article></div></details>
+<details class="group" open><summary><span class="gname">大气、反射与动态分辨率</span><span class="gdesc">着色器采样数、步长与动态分辨率档位。</span><span class="gn">14</span></summary><div class="items"><article class="item" data-conf="推定" data-search="realtime_cubemaps_nr_far_samples win32.render_settings.shading_environment_overrides.realtime_cubemaps_nr_far_samples 12 实时反射 cubemap 远景采样数。 GPU·画质↓帧↑ 推定 — ">
+<div class="r1"><code class="key">realtime_cubemaps_nr_far_samples</code><span class="badge b推定">推定</span><span class="impact">GPU·画质↓帧↑</span><span class="src">—</span></div>
+<div class="path">win32.render_settings.shading_environment_overrides.realtime_cubemaps_nr_far_samples</div>
+<div class="val"><span>出厂值</span><code>12</code></div>
+<p class="def">实时反射 cubemap 远景采样数。</p></article>
+<article class="item" data-conf="推定" data-search="realtime_cubemaps_downsample_mip_nr_space_samples win32.render_settings.shading_environment_overrides.realtime_cubemaps_downsample_mip_nr_space_samples 24 实时反射 cubemap 降采样 mip 的空间采样数。 GPU·画质↓帧↑ 推定 — ">
+<div class="r1"><code class="key">realtime_cubemaps_downsample_mip_nr_space_samples</code><span class="badge b推定">推定</span><span class="impact">GPU·画质↓帧↑</span><span class="src">—</span></div>
+<div class="path">win32.render_settings.shading_environment_overrides.realtime_cubemaps_downsample_mip_nr_space_samples</div>
+<div class="val"><span>出厂值</span><code>24</code></div>
+<p class="def">实时反射 cubemap 降采样 mip 的空间采样数。</p></article>
+<article class="item" data-conf="推定" data-search="realtime_cubemaps_downsample_mip_nr_far_samples win32.render_settings.shading_environment_overrides.realtime_cubemaps_downsample_mip_nr_far_samples 12 实时反射 cubemap 降采样 mip 的远景采样数。 GPU·画质↓帧↑ 推定 — ">
+<div class="r1"><code class="key">realtime_cubemaps_downsample_mip_nr_far_samples</code><span class="badge b推定">推定</span><span class="impact">GPU·画质↓帧↑</span><span class="src">—</span></div>
+<div class="path">win32.render_settings.shading_environment_overrides.realtime_cubemaps_downsample_mip_nr_far_samples</div>
+<div class="val"><span>出厂值</span><code>12</code></div>
+<p class="def">实时反射 cubemap 降采样 mip 的远景采样数。</p></article>
+<article class="item" data-conf="推定" data-search="cloud_step_length win32.render_settings.shading_environment_overrides.cloud_step_length 8 体积云光线步进步长。加大减少步数、降低 GPU 成本；过大出现层状伪影。工具不自动改，只给方向。 GPU·画质↓帧↑ 推定 按目标 体积云 GPU 成本占比高时">
+<div class="r1"><code class="key">cloud_step_length</code><span class="badge b推定">推定</span><span class="impact">GPU·画质↓帧↑</span><span class="src">按目标</span></div>
+<div class="path">win32.render_settings.shading_environment_overrides.cloud_step_length</div>
+<div class="val"><span>出厂值</span><code>8</code></div>
+<p class="def">体积云光线步进步长。加大减少步数、降低 GPU 成本；过大出现层状伪影。工具不自动改，只给方向。</p><div class="cond"><span>适用条件</span>体积云 GPU 成本占比高时</div></article>
+<article class="item" data-conf="推定" data-search="realtime_cubemaps_nr_space_samples win32.render_settings.shading_environment_overrides.realtime_cubemaps_nr_space_samples 24 实时反射 cubemap 空间采样数。 GPU·画质↓帧↑ 推定 — ">
+<div class="r1"><code class="key">realtime_cubemaps_nr_space_samples</code><span class="badge b推定">推定</span><span class="impact">GPU·画质↓帧↑</span><span class="src">—</span></div>
+<div class="path">win32.render_settings.shading_environment_overrides.realtime_cubemaps_nr_space_samples</div>
+<div class="val"><span>出厂值</span><code>24</code></div>
+<p class="def">实时反射 cubemap 空间采样数。</p></article>
+<article class="item" data-conf="确定" data-search="atmospheric_scattering_ambience_samples win32.render_settings.shading_environment_overrides.atmospheric_scattering_ambience_samples 128 环境散射积分采样数，等于 GPU 着色器循环次数。减半约线性降低该 pass 的 GPU 成本、提升帧数；画质可能出现色带或噪点。 GPU·画质↓帧↑ 确定 按目标 GPU瓶颈且开放天空场景时">
+<div class="r1"><code class="key">atmospheric_scattering_ambience_samples</code><span class="badge b确定">确定</span><span class="impact">GPU·画质↓帧↑</span><span class="src">按目标</span></div>
+<div class="path">win32.render_settings.shading_environment_overrides.atmospheric_scattering_ambience_samples</div>
+<div class="val"><span>出厂值</span><code>128</code></div>
+<p class="def">环境散射积分采样数，等于 GPU 着色器循环次数。减半约线性降低该 pass 的 GPU 成本、提升帧数；画质可能出现色带或噪点。</p><div class="cond"><span>适用条件</span>GPU瓶颈且开放天空场景时</div></article>
+<article class="item" data-conf="确定" data-search="sun_step_length_multiplier win32.render_settings.shading_environment_overrides.sun_step_length_multiplier 0.17000000000000001 朝太阳方向 ray-march 的步长缩放，步数与系数成反比。0.17→0.4 约把步数降到 42.5%，降低 GPU 成本；步长过大会出现条带伪影。 GPU·画质↓帧↑ 确定 按目标 GPU瓶颈且开放天空场景时">
+<div class="r1"><code class="key">sun_step_length_multiplier</code><span class="badge b确定">确定</span><span class="impact">GPU·画质↓帧↑</span><span class="src">按目标</span></div>
+<div class="path">win32.render_settings.shading_environment_overrides.sun_step_length_multiplier</div>
+<div class="val"><span>出厂值</span><code>0.17000000000000001</code></div>
+<p class="def">朝太阳方向 ray-march 的步长缩放，步数与系数成反比。0.17→0.4 约把步数降到 42.5%，降低 GPU 成本；步长过大会出现条带伪影。</p><div class="cond"><span>适用条件</span>GPU瓶颈且开放天空场景时</div></article>
+<article class="item" data-conf="推定" data-search="realtime_cubemaps_nr_regular_samples win32.render_settings.shading_environment_overrides.realtime_cubemaps_nr_regular_samples 32 实时反射 cubemap 常规采样数。减小降低 GPU 成本，反射会变糊；同族还有 far/space/downsample 多组。 GPU·画质↓帧↑ 推定 按目标 实时反射 GPU 成本占比高时">
+<div class="r1"><code class="key">realtime_cubemaps_nr_regular_samples</code><span class="badge b推定">推定</span><span class="impact">GPU·画质↓帧↑</span><span class="src">按目标</span></div>
+<div class="path">win32.render_settings.shading_environment_overrides.realtime_cubemaps_nr_regular_samples</div>
+<div class="val"><span>出厂值</span><code>32</code></div>
+<p class="def">实时反射 cubemap 常规采样数。减小降低 GPU 成本，反射会变糊；同族还有 far/space/downsample 多组。</p><div class="cond"><span>适用条件</span>实时反射 GPU 成本占比高时</div></article>
+<article class="item" data-conf="推定" data-search="planet_atmosphere_nr_sample_steps win32.render_settings.shading_environment_overrides.planet_atmosphere_nr_sample_steps 10 行星大气视线方向的采样步数。 GPU·画质↓帧↑ 推定 — ">
+<div class="r1"><code class="key">planet_atmosphere_nr_sample_steps</code><span class="badge b推定">推定</span><span class="impact">GPU·画质↓帧↑</span><span class="src">—</span></div>
+<div class="path">win32.render_settings.shading_environment_overrides.planet_atmosphere_nr_sample_steps</div>
+<div class="val"><span>出厂值</span><code>10</code></div>
+<p class="def">行星大气视线方向的采样步数。</p></article>
+<article class="item" data-conf="推定" data-search="planet_atmosphere_nr_sun_steps win32.render_settings.shading_environment_overrides.planet_atmosphere_nr_sun_steps 6 行星大气朝太阳方向的采样步数。 GPU·画质↓帧↑ 推定 — ">
+<div class="r1"><code class="key">planet_atmosphere_nr_sun_steps</code><span class="badge b推定">推定</span><span class="impact">GPU·画质↓帧↑</span><span class="src">—</span></div>
+<div class="path">win32.render_settings.shading_environment_overrides.planet_atmosphere_nr_sun_steps</div>
+<div class="val"><span>出厂值</span><code>6</code></div>
+<p class="def">行星大气朝太阳方向的采样步数。</p></article>
+<article class="item" data-conf="推定" data-search="realtime_cubemaps_downsample_mip_nr_regular_samples win32.render_settings.shading_environment_overrides.realtime_cubemaps_downsample_mip_nr_regular_samples 24 实时反射 cubemap 降采样 mip 的常规采样数。 GPU·画质↓帧↑ 推定 — ">
+<div class="r1"><code class="key">realtime_cubemaps_downsample_mip_nr_regular_samples</code><span class="badge b推定">推定</span><span class="impact">GPU·画质↓帧↑</span><span class="src">—</span></div>
+<div class="path">win32.render_settings.shading_environment_overrides.realtime_cubemaps_downsample_mip_nr_regular_samples</div>
+<div class="val"><span>出厂值</span><code>24</code></div>
+<p class="def">实时反射 cubemap 降采样 mip 的常规采样数。</p></article>
+<article class="item" data-conf="推定" data-search="space_planet_shadow_sample_count win32.render_settings.shading_environment_overrides.space_planet_shadow_sample_count 8 太空场景行星阴影采样数。 GPU·画质↓帧↑ 推定 — ">
+<div class="r1"><code class="key">space_planet_shadow_sample_count</code><span class="badge b推定">推定</span><span class="impact">GPU·画质↓帧↑</span><span class="src">—</span></div>
+<div class="path">win32.render_settings.shading_environment_overrides.space_planet_shadow_sample_count</div>
+<div class="val"><span>出厂值</span><code>8</code></div>
+<p class="def">太空场景行星阴影采样数。</p></article>
+<article class="item" data-conf="推定" data-search="drs_minimum_scale_factor win32.render_settings.drs_minimum_scale_factor 0.5 动态分辨率下限比例。实际开关在 user_settings.config，settings.ini 这段可能被用户配置覆盖，改了未必生效。 画质↓帧↑ 推定 通用 实际开关在user_settings.config">
+<div class="r1"><code class="key">drs_minimum_scale_factor</code><span class="badge b推定">推定</span><span class="impact">画质↓帧↑</span><span class="src">通用</span></div>
+<div class="path">win32.render_settings.drs_minimum_scale_factor</div>
+<div class="val"><span>出厂值</span><code>0.5</code></div>
+<p class="def">动态分辨率下限比例。实际开关在 user_settings.config，settings.ini 这段可能被用户配置覆盖，改了未必生效。</p><div class="cond"><span>适用条件</span>实际开关在user_settings.config</div></article>
+<article class="item" data-conf="推定" data-search="drs_scale_factor_count win32.render_settings.drs_scale_factor_count 15 动态分辨率档位数量。 画质↓帧↑ 推定 — ">
+<div class="r1"><code class="key">drs_scale_factor_count</code><span class="badge b推定">推定</span><span class="impact">画质↓帧↑</span><span class="src">—</span></div>
+<div class="path">win32.render_settings.drs_scale_factor_count</div>
+<div class="val"><span>出厂值</span><code>15</code></div>
+<p class="def">动态分辨率档位数量。</p></article></div></details>
+<details class="group" open><summary><span class="gname">渲染器</span><span class="gdesc">全屏模式、垂直同步、适配器、PSO 缓存与 HDR。</span><span class="gn">18</span></summary><div class="items"><article class="item" data-conf="推测" data-search="fullscreen_output win32.renderer.fullscreen_output 0 多显示器输出索引。 — 推测 — ">
+<div class="r1"><code class="key">fullscreen_output</code><span class="badge b推测">推测</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.renderer.fullscreen_output</div>
+<div class="val"><span>出厂值</span><code>0</code></div>
+<p class="def">多显示器输出索引。</p></article>
+<article class="item" data-conf="确定" data-search="reflex_mode win32.renderer.reflex_mode 2 NVIDIA Reflex 模式，0 = 关闭，2 = On + Boost。启用时限制 CPU 提前提交的帧数，改变帧提交节奏。作用于 CPU 侧提交时机，不直接改变渲染工作量；可观测变量为平均帧率与帧时间分布。 延迟·CPU提交·帧时间 确定 按硬件 仅 NVIDIA 显卡与驱动侧功能支持时生效">
+<div class="r1"><code class="key">reflex_mode</code><span class="badge b确定">确定</span><span class="impact">延迟·CPU提交·帧时间</span><span class="src">按硬件</span></div>
+<div class="path">win32.renderer.reflex_mode</div>
+<div class="val"><span>出厂值</span><code>2</code></div>
+<p class="def">NVIDIA Reflex 模式，0 = 关闭，2 = On + Boost。启用时限制 CPU 提前提交的帧数，改变帧提交节奏。作用于 CPU 侧提交时机，不直接改变渲染工作量；可观测变量为平均帧率与帧时间分布。</p><div class="cond"><span>适用条件</span>仅 NVIDIA 显卡与驱动侧功能支持时生效</div></article>
+<article class="item" data-conf="推定" data-search="anti_lag win32.renderer.anti_lag true 引擎侧帧节奏控制开关。与驱动侧抗延迟功能作用于同一提交环节；两者同时启用时，帧提交时机会被两套机制共同干预。 延迟·帧节奏 推定 按目标 取决于驱动侧抗延迟功能的启用状态">
+<div class="r1"><code class="key">anti_lag</code><span class="badge b推定">推定</span><span class="impact">延迟·帧节奏</span><span class="src">按目标</span></div>
+<div class="path">win32.renderer.anti_lag</div>
+<div class="val"><span>出厂值</span><code>true</code></div>
+<p class="def">引擎侧帧节奏控制开关。与驱动侧抗延迟功能作用于同一提交环节；两者同时启用时，帧提交时机会被两套机制共同干预。</p><div class="cond"><span>适用条件</span>取决于驱动侧抗延迟功能的启用状态</div></article>
+<article class="item" data-conf="确定" data-search="fullscreen win32.renderer.fullscreen false 独占全屏开关。绕过 DWM 合成，延迟更低、驱动侧低延迟功能完整生效；代价是 alt-tab 变慢、部分 overlay 异常。与 borderless_fullscreen 必须一真一假。 延迟·合成 确定 按目标 与borderless_fullscreen必须一真一假">
+<div class="r1"><code class="key">fullscreen</code><span class="badge b确定">确定</span><span class="impact">延迟·合成</span><span class="src">按目标</span></div>
+<div class="path">win32.renderer.fullscreen</div>
+<div class="val"><span>出厂值</span><code>false</code></div>
+<p class="def">独占全屏开关。绕过 DWM 合成，延迟更低、驱动侧低延迟功能完整生效；代价是 alt-tab 变慢、部分 overlay 异常。与 borderless_fullscreen 必须一真一假。</p><div class="cond"><span>适用条件</span>与borderless_fullscreen必须一真一假</div></article>
+<article class="item" data-conf="确定" data-search="prefer_hdr win32.renderer.prefer_hdr false HDR 偏好开关，与 hdr_enabled 必须一致。不一致可能导致 HDR 判定混乱。 画质·色彩 确定 按硬件 同上">
+<div class="r1"><code class="key">prefer_hdr</code><span class="badge b确定">确定</span><span class="impact">画质·色彩</span><span class="src">按硬件</span></div>
+<div class="path">win32.renderer.prefer_hdr</div>
+<div class="val"><span>出厂值</span><code>false</code></div>
+<p class="def">HDR 偏好开关，与 hdr_enabled 必须一致。不一致可能导致 HDR 判定混乱。</p><div class="cond"><span>适用条件</span>同上</div></article>
+<article class="item" data-conf="确定" data-search="hdr_enabled win32.renderer.hdr_enabled false HDR 输出开关。需显示器与 Windows HDR 同时支持；开错会色彩发灰、亮度异常。工具不自动开。 画质·色彩 确定 按硬件 仅显示器支持HDR且已在Windows开启HDR时">
+<div class="r1"><code class="key">hdr_enabled</code><span class="badge b确定">确定</span><span class="impact">画质·色彩</span><span class="src">按硬件</span></div>
+<div class="path">win32.renderer.hdr_enabled</div>
+<div class="val"><span>出厂值</span><code>false</code></div>
+<p class="def">HDR 输出开关。需显示器与 Windows HDR 同时支持；开错会色彩发灰、亮度异常。工具不自动开。</p><div class="cond"><span>适用条件</span>仅显示器支持HDR且已在Windows开启HDR时</div></article>
+<article class="item" data-conf="推定" data-search="render_resolution win32.renderer.render_resolution [-1  -1] 渲染分辨率数组；[-1 -1] 为跟随默认。 — 推定 — ">
+<div class="r1"><code class="key">render_resolution</code><span class="badge b推定">推定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.renderer.render_resolution</div>
+<div class="val"><span>出厂值</span><code>[-1  -1]</code></div>
+<p class="def">渲染分辨率数组；[-1 -1] 为跟随默认。</p></article>
+<article class="item" data-conf="确定" data-search="d3d_debug win32.renderer.d3d_debug false D3D 调试层开关。开启会大幅降低帧数。 帧数·灾难↓ 确定 通用 开启会大幅降低帧数">
+<div class="r1"><code class="key">d3d_debug</code><span class="badge b确定">确定</span><span class="impact">帧数·灾难↓</span><span class="src">通用</span></div>
+<div class="path">win32.renderer.d3d_debug</div>
+<div class="val"><span>出厂值</span><code>false</code></div>
+<p class="def">D3D 调试层开关。开启会大幅降低帧数。</p><div class="cond"><span>适用条件</span>开启会大幅降低帧数</div></article>
+<article class="item" data-conf="确定" data-search="adapter_index win32.renderer.adapter_index 0 D3D 适配器索引。存在多个显示适配器时（核显加独显、多张独显、不同厂商组合），索引 0 未必指向实际渲染用的 GPU；该值指向另一块设备时，整套调优会作用到那块设备上。 GPU·适配器 确定 按硬件 多 GPU 机器的该值取决于 D3D 枚举顺序">
+<div class="r1"><code class="key">adapter_index</code><span class="badge b确定">确定</span><span class="impact">GPU·适配器</span><span class="src">按硬件</span></div>
+<div class="path">win32.renderer.adapter_index</div>
+<div class="val"><span>出厂值</span><code>0</code></div>
+<p class="def">D3D 适配器索引。存在多个显示适配器时（核显加独显、多张独显、不同厂商组合），索引 0 未必指向实际渲染用的 GPU；该值指向另一块设备时，整套调优会作用到那块设备上。</p><div class="cond"><span>适用条件</span>多 GPU 机器的该值取决于 D3D 枚举顺序</div></article>
+<article class="item" data-conf="确定" data-search="pipeline_cache_name win32.renderer.pso_cache.pipeline_cache_name &quot;pipeline_library.cache&quot; 管线缓存文件名。 — 确定 — ">
+<div class="r1"><code class="key">pipeline_cache_name</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.renderer.pso_cache.pipeline_cache_name</div>
+<div class="val"><span>出厂值</span><code>&quot;pipeline_library.cache&quot;</code></div>
+<p class="def">管线缓存文件名。</p></article>
+<article class="item" data-conf="推测" data-search="pipeline_cache_prune_size win32.renderer.pso_cache.pipeline_cache_prune_size 256 管线缓存裁剪阈值。调大减少着色器重编译造成的卡顿，代价是缓存文件变大、磁盘占用上升。 帧时间·编译卡顿 推测 通用 通用">
+<div class="r1"><code class="key">pipeline_cache_prune_size</code><span class="badge b推测">推测</span><span class="impact">帧时间·编译卡顿</span><span class="src">通用</span></div>
+<div class="path">win32.renderer.pso_cache.pipeline_cache_prune_size</div>
+<div class="val"><span>出厂值</span><code>256</code></div>
+<p class="def">管线缓存裁剪阈值。调大减少着色器重编译造成的卡顿，代价是缓存文件变大、磁盘占用上升。</p><div class="cond"><span>适用条件</span>通用</div></article>
+<article class="item" data-conf="推测" data-search="pso_cache_prune_size win32.renderer.pso_cache.pso_cache_prune_size 512 PSO blob 缓存裁剪阈值，同上。 帧时间·编译卡顿 推测 通用 通用">
+<div class="r1"><code class="key">pso_cache_prune_size</code><span class="badge b推测">推测</span><span class="impact">帧时间·编译卡顿</span><span class="src">通用</span></div>
+<div class="path">win32.renderer.pso_cache.pso_cache_prune_size</div>
+<div class="val"><span>出厂值</span><code>512</code></div>
+<p class="def">PSO blob 缓存裁剪阈值，同上。</p><div class="cond"><span>适用条件</span>通用</div></article>
+<article class="item" data-conf="确定" data-search="cache_folder win32.renderer.pso_cache.cache_folder &quot;%APPDATA%/Arrowhead/Helldivers2/shader_cache/&quot; 着色器缓存目录。 — 确定 — ">
+<div class="r1"><code class="key">cache_folder</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.renderer.pso_cache.cache_folder</div>
+<div class="val"><span>出厂值</span><code>&quot;%APPDATA%/Arrowhead/Helldivers2/shader_cache/&quot;</code></div>
+<p class="def">着色器缓存目录。</p></article>
+<article class="item" data-conf="确定" data-search="pso_cache_name win32.renderer.pso_cache.pso_cache_name &quot;pso_blobs.cache&quot; PSO blob 缓存文件名。 — 确定 — ">
+<div class="r1"><code class="key">pso_cache_name</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.renderer.pso_cache.pso_cache_name</div>
+<div class="val"><span>出厂值</span><code>&quot;pso_blobs.cache&quot;</code></div>
+<p class="def">PSO blob 缓存文件名。</p></article>
+<article class="item" data-conf="猜测" data-search="resolution_mode_index win32.renderer.resolution_mode_index 0 分辨率模式索引；具体档位映射未见公开说明。 — 猜测 — ">
+<div class="r1"><code class="key">resolution_mode_index</code><span class="badge b猜测">猜测</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.renderer.resolution_mode_index</div>
+<div class="val"><span>出厂值</span><code>0</code></div>
+<p class="def">分辨率模式索引；具体档位映射未见公开说明。</p></article>
+<article class="item" data-conf="确定" data-search="borderless_fullscreen win32.renderer.borderless_fullscreen true 无边框全屏开关，经 DWM 合成，额外一帧延迟。改 fullscreen 时本项需同步取反，否则组合非法。 延迟·合成 确定 按目标 与fullscreen必须一真一假">
+<div class="r1"><code class="key">borderless_fullscreen</code><span class="badge b确定">确定</span><span class="impact">延迟·合成</span><span class="src">按目标</span></div>
+<div class="path">win32.renderer.borderless_fullscreen</div>
+<div class="val"><span>出厂值</span><code>true</code></div>
+<p class="def">无边框全屏开关，经 DWM 合成，额外一帧延迟。改 fullscreen 时本项需同步取反，否则组合非法。</p><div class="cond"><span>适用条件</span>与fullscreen必须一真一假</div></article>
+<article class="item" data-conf="推定" data-search="aspect_ratio win32.renderer.aspect_ratio -1 宽高比；-1 为跟随默认。 — 推定 — ">
+<div class="r1"><code class="key">aspect_ratio</code><span class="badge b推定">推定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">win32.renderer.aspect_ratio</div>
+<div class="val"><span>出厂值</span><code>-1</code></div>
+<p class="def">宽高比；-1 为跟随默认。</p></article>
+<article class="item" data-conf="确定" data-search="vsync win32.renderer.vsync false 垂直同步开关。无边框下关 vsync 拿不到低延迟，仍受 DWM 刷新率同步；VRR 配合帧率上限是另一种同步方式。 延迟·同步 确定 通用 高刷屏且使用 VRR 时">
+<div class="r1"><code class="key">vsync</code><span class="badge b确定">确定</span><span class="impact">延迟·同步</span><span class="src">通用</span></div>
+<div class="path">win32.renderer.vsync</div>
+<div class="val"><span>出厂值</span><code>false</code></div>
+<p class="def">垂直同步开关。无边框下关 vsync 拿不到低延迟，仍受 DWM 刷新率同步；VRR 配合帧率上限是另一种同步方式。</p><div class="cond"><span>适用条件</span>高刷屏且使用 VRR 时</div></article></div></details>
+<details class="group" open><summary><span class="gname">遥测、PlayFab 与版本</span><span class="gdesc">遥测上报周期、各环境标题 ID 与构建号。</span><span class="gn">9</span></summary><div class="items"><article class="item" data-conf="猜测" data-search="metrics_batch_timer metrics_batch_timer 30 遥测批量上报周期，单位推测为秒。无证据表明它造成周期性帧时间尖峰。 — 猜测 通用 未验证开销">
+<div class="r1"><code class="key">metrics_batch_timer</code><span class="badge b猜测">猜测</span><span class="impact">—</span><span class="src">通用</span></div>
+<div class="path">metrics_batch_timer</div>
+<div class="val"><span>出厂值</span><code>30</code></div>
+<p class="def">遥测批量上报周期，单位推测为秒。无证据表明它造成周期性帧时间尖峰。</p><div class="cond"><span>适用条件</span>未验证开销</div></article>
+<article class="item" data-conf="确定" data-search="LIVE playfab.title_ids.LIVE &quot;974A9&quot; PlayFab LIVE 环境的标题 ID。 — 确定 — ">
+<div class="r1"><code class="key">LIVE</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">playfab.title_ids.LIVE</div>
+<div class="val"><span>出厂值</span><code>&quot;974A9&quot;</code></div>
+<p class="def">PlayFab LIVE 环境的标题 ID。</p></article>
+<article class="item" data-conf="确定" data-search="DEV playfab.title_ids.DEV &quot;BCDDE&quot; PlayFab DEV 环境的标题 ID。 — 确定 — ">
+<div class="r1"><code class="key">DEV</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">playfab.title_ids.DEV</div>
+<div class="val"><span>出厂值</span><code>&quot;BCDDE&quot;</code></div>
+<p class="def">PlayFab DEV 环境的标题 ID。</p></article>
+<article class="item" data-conf="确定" data-search="CERT playfab.title_ids.CERT &quot;BCDDE&quot; PlayFab CERT 环境的标题 ID。 — 确定 — ">
+<div class="r1"><code class="key">CERT</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">playfab.title_ids.CERT</div>
+<div class="val"><span>出厂值</span><code>&quot;BCDDE&quot;</code></div>
+<p class="def">PlayFab CERT 环境的标题 ID。</p></article>
+<article class="item" data-conf="确定" data-search="BIO playfab.title_ids.BIO &quot;BCDDE&quot; PlayFab BIO 环境的标题 ID。 — 确定 — ">
+<div class="r1"><code class="key">BIO</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">playfab.title_ids.BIO</div>
+<div class="val"><span>出厂值</span><code>&quot;BCDDE&quot;</code></div>
+<p class="def">PlayFab BIO 环境的标题 ID。</p></article>
+<article class="item" data-conf="确定" data-search="TECH playfab.title_ids.TECH &quot;BCDDE&quot; PlayFab TECH 环境的标题 ID。 — 确定 — ">
+<div class="r1"><code class="key">TECH</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">playfab.title_ids.TECH</div>
+<div class="val"><span>出厂值</span><code>&quot;BCDDE&quot;</code></div>
+<p class="def">PlayFab TECH 环境的标题 ID。</p></article>
+<article class="item" data-conf="确定" data-search="BETA playfab.title_ids.BETA &quot;7C75A&quot; PlayFab BETA 环境的标题 ID。 — 确定 — ">
+<div class="r1"><code class="key">BETA</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">playfab.title_ids.BETA</div>
+<div class="val"><span>出厂值</span><code>&quot;7C75A&quot;</code></div>
+<p class="def">PlayFab BETA 环境的标题 ID。</p></article>
+<article class="item" data-conf="确定" data-search="build build 19464 游戏构建号；随游戏更新变化，非手动修改项。 — 确定 — ">
+<div class="r1"><code class="key">build</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">build</div>
+<div class="val"><span>出厂值</span><code>19464</code></div>
+<p class="def">游戏构建号；随游戏更新变化，非手动修改项。</p></article>
+<article class="item" data-conf="确定" data-search="audio_ver audio_ver &quot;19680&quot; 音频资源版本号；随游戏更新变化，非手动修改项。 — 确定 — ">
+<div class="r1"><code class="key">audio_ver</code><span class="badge b确定">确定</span><span class="impact">—</span><span class="src">—</span></div>
+<div class="path">audio_ver</div>
+<div class="val"><span>出厂值</span><code>&quot;19680&quot;</code></div>
+<p class="def">音频资源版本号；随游戏更新变化，非手动修改项。</p></article></div></details></main>
+<footer><b>口径</b>
+<ul>
+<li>置信度：<b>确定</b> 公开文档或可确证机制 / <b>推定</b> 引擎模型推断 / <b>推测</b> 按命名与方向推断 / <b>猜测</b> 判定逻辑未见公开说明。</li>
+<li>来源：<b>通用</b> 与硬件无关的引擎层值 / <b>按硬件</b> 取值与检测结果相关 / <b>按目标</b> 取决于画质或帧数取向。</li>
+<li>影响短标签只标注参数的作用面（GPU、CPU、显存、帧时间、音频等），不含改动方向，也不构成改动建议。</li>
+<li>画质档位由 <code>%APPDATA%\Arrowhead\Helldivers2\user_settings.config</code> 控制，本文件不控制画质预设；改动前请备份。</li>
+</ul></footer></div>
+<script>
+var ALL=121, cur='', items=[].slice.call(document.querySelectorAll('.item')), groups=[].slice.call(document.querySelectorAll('.group'));
+function apply(){
+ var s=document.getElementById('q').value.trim().toLowerCase(), vis=0;
+ items.forEach(function(it){
+  var ok=(!s||it.dataset.search.toLowerCase().indexOf(s)>=0)&&(!cur||it.dataset.conf===cur);
+  it.style.display=ok?'':'none'; if(ok)vis++;
+ });
+ groups.forEach(function(g){
+  var n=0; Array.prototype.forEach.call(g.querySelectorAll('.item'),function(it){ if(it.style.display!=='none')n++; });
+  g.hidden=(s||cur)&&n===0; if(s||cur)g.open=true;
+  g.querySelector('.gn').textContent=n;
+ });
+ document.getElementById('count').textContent='显示 '+vis+' / '+ALL+' 项';
+}
+document.getElementById('q').addEventListener('input',apply);
+document.querySelectorAll('.chip').forEach(function(c){c.addEventListener('click',function(){
+ document.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on')});c.classList.add('on');cur=c.dataset.c;apply();});});
+document.getElementById('ea').addEventListener('click',function(){groups.forEach(function(g){g.open=true})});
+document.getElementById('ca').addEventListener('click',function(){groups.forEach(function(g){g.open=false})});
+apply();
+</script></body></html>
