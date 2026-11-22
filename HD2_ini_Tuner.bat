@@ -1,6 +1,6 @@
 @echo off
 chcp 936 >nul 2>&1
-title Helldivers 2 settings.ini Tuner
+title Helldivers 2 settings.ini tuner V1.2 Hybrid
 setlocal
 set "HD2_SELF=%~f0"
 set "HD2_ARG=%~1"
@@ -14,6 +14,10 @@ $ErrorActionPreference='Stop'
 [Console]::OutputEncoding=[Text.Encoding]::GetEncoding(936)
 $OutputEncoding=[Text.Encoding]::GetEncoding(936)
 $Latin=[Text.Encoding]::GetEncoding(28591)
+$ToolVersion='V1.2 Hybrid'
+$ManualUrl='https://motu-z.github.io/HD2-Stingray-Tuner/HD2_ini_Refere.html'
+$ManualBaselineBuild='19543'
+$RepoUrl='https://github.com/Motu-Z/HD2-Stingray-Tuner'
 
 # ===== 配置区 =====
 # Tier: SAFE=机制  TRADEOFF=取舍  HWSPEC=硬件  CAUTION=风险
@@ -22,56 +26,56 @@ $Latin=[Text.Encoding]::GetEncoding(28591)
 # Suggest 为数据表参考值；画面项与置信为推测/猜测的项不显示统一参考值，参考列记为 -。
 # 定义写在 Note，只在逐项修改或查详情时展开。
 $Params=@(
- [pscustomobject]@{Key='num_reserved_threads';Default='2';Suggest='18';Tier='HWSPEC';Rule='threads';Src='配置';Impact='CPU·并行';Conf='推定';Cond='已限制游戏可用逻辑核集合时才需要改';Note='线程池保留线程数。引擎作业线程数 = 逻辑处理器总数 − 本值；32 逻辑核下，保留 2 对应 30 条作业线程，保留 18 对应 14 条。影响 CPU 并行吞吐与 fork-join 尾延迟。若已通过 CPU Sets、BIOS 或处理器亲和性限制可用逻辑核集合，须按 reserved = 逻辑核总数 − 目标线程数 重新计算；该关系与 CPU 厂商及核心拓扑无关。'}
- [pscustomobject]@{Key='memory_budget_mb';Default='1536';Suggest='3072';Tier='HWSPEC';Rule='membudget';Src='配置';Impact='显存·驻留';Conf='推定';Cond='显存充足且游戏所在磁盘为SSD时';Note='流送纹理常驻 Mip 数据量（MB）。调高可提升纹理清晰度并减少重复载入，代价是显存驻留增加；超出物理显存将引发频繁驱逐并导致帧率显著下降。'}
- [pscustomobject]@{Key='texture_heap_usage_limit';Default='5376';Suggest='6144';Tier='HWSPEC';Rule='heap';Src='配置';Impact='显存·上限';Conf='推定';Cond='必须匹配显存';Note='D3D12 纹理堆驻留上限（MB）。决定纹理可申请的显存堆大小；超过物理显存会退化至共享内存，导致帧率显著下降。'}
- [pscustomobject]@{Key='hdr_enabled';Default='false';Suggest='false';Tier='HWSPEC';Rule='hdr';Src='配置';Impact='画面·色彩';Conf='确定';Cond='仅显示器支持HDR且已在Windows开启HDR时';Note='HDR 输出开关。需显示器与 Windows HDR 同时支持；配置错误会导致色彩发灰或亮度异常。本工具不自动修改该项。'}
- [pscustomobject]@{Key='prefer_hdr';Default='false';Suggest='false';Tier='HWSPEC';Rule='hdr';Src='配置';Impact='画面·色彩';Conf='确定';Cond='同上';Note='HDR 偏好开关。必须与 hdr_enabled 保持一致，否则可能导致 HDR 判定混乱。'}
- [pscustomobject]@{Key='minimum_unload_delay';Default='2';Suggest='30';Tier='SAFE';Rule='delay';Src='配置';Impact='显存·驻留';Conf='推测';Cond='通用';Note='纹理最短驻留时间，单位推断为秒。延长可抑制反复驱逐与重载，减少帧时间抖动，代价是显存常驻量上升。'}
- [pscustomobject]@{Key='minimum_shrink_delay';Default='30';Suggest='90';Tier='SAFE';Rule='delay';Src='配置';Impact='显存·抖动';Conf='推测';Cond='通用';Note='流送池收缩前的等待时长。延长可减少池重分配与帧时间抖动，代价是显存回收变慢。'}
- [pscustomobject]@{Key='max_frame_copy_bytes';Default='67108864';Suggest='100663296';Tier='SAFE';Rule='copyband';Src='配置';Impact='显存·拷贝';Conf='推测';Cond='通用';Note='单帧 GPU 内拷贝上限（字节），占用显存带宽。通常冗余度较高；放宽对帧率影响有限，小显存设备可能放大单帧压力。'}
- [pscustomobject]@{Key='max_frame_upload_bytes';Default='16777216';Suggest='16777216';Tier='SAFE';Rule='keep';Src='引擎';Impact='帧时间·尖峰';Conf='推定';Cond='无改动依据';Note='单帧 CPU→GPU 上传上限，默认 16 MB，走 PCIe 带宽。作为抑制单帧 PCIe 尖峰的节流阈值，放宽可能放大帧时间波动。'}
- [pscustomobject]@{Key='pipeline_cache_prune_size';Default='256';Suggest='512';Tier='SAFE';Rule='keep';Src='引擎';Impact='帧时间·编译卡顿';Conf='推测';Cond='通用';Note='管线缓存裁剪阈值。调大可减少着色器重编译卡顿，代价是缓存文件增大、磁盘占用上升。'}
- [pscustomobject]@{Key='pso_cache_prune_size';Default='512';Suggest='1024';Tier='SAFE';Rule='keep';Src='引擎';Impact='帧时间·编译卡顿';Conf='推测';Cond='通用';Note='PSO blob 缓存裁剪阈值，机制同上。'}
+ [pscustomobject]@{Key='num_reserved_threads';Default='2';Suggest='18';Tier='HWSPEC';Rule='threads';Src='配置';Impact='CPU·保留线程';Conf='推定';Cond='已限制游戏可用逻辑核集合时';Note='线程池保留线程数。引擎作业线程数 = 逻辑处理器总数 − 本值。影响 CPU 并行吞吐与 fork-join 尾延迟。'}
+ [pscustomobject]@{Key='memory_budget_mb';Default='1536';Suggest='3072';Tier='HWSPEC';Rule='membudget';Src='配置';Impact='显存·纹理驻留';Conf='推定';Cond='显存充足且游戏所在磁盘为 SSD 时';Note='流送纹理常驻 Mip 数据量（MB）。调高可提升纹理清晰度并减少重复载入，代价是显存驻留增加；超出物理显存将引发频繁驱逐并导致帧率显著下降。'}
+ [pscustomobject]@{Key='texture_heap_usage_limit';Default='5376';Suggest='6144';Tier='HWSPEC';Rule='heap';Src='配置';Impact='显存·硬性上限';Conf='推定';Cond='显存大小';Note='D3D12 纹理堆驻留上限（MB）。决定纹理可申请的显存堆大小；超过物理显存会退化至共享内存，导致帧率显著下降。'}
+ [pscustomobject]@{Key='hdr_enabled';Default='false';Suggest='false';Tier='HWSPEC';Rule='hdr';Src='配置';Impact='渲染·HDR输出';Conf='确定';Cond='显示器支持 HDR 且已在 Windows 开启 HDR 时';Note='HDR 输出开关。需显示器与 Windows HDR 同时支持；配置错误会导致色彩发灰或亮度异常。本工具不自动修改该项。'}
+ [pscustomobject]@{Key='prefer_hdr';Default='false';Suggest='false';Tier='HWSPEC';Rule='hdr';Src='配置';Impact='渲染·HDR输出';Conf='确定';Cond='同上';Note='HDR 偏好开关。必须与 hdr_enabled 保持一致，否则可能导致 HDR 判定混乱。'}
+ [pscustomobject]@{Key='minimum_unload_delay';Default='2';Suggest='30';Tier='SAFE';Rule='delay';Src='配置';Impact='显存·驻留时间';Conf='推测';Cond='通用';Note='纹理最短驻留时间，单位推断为秒。延长可抑制反复驱逐与重载，减少帧时间抖动，代价是显存常驻量上升。'}
+ [pscustomobject]@{Key='minimum_shrink_delay';Default='30';Suggest='90';Tier='SAFE';Rule='delay';Src='配置';Impact='显存·收缩延迟';Conf='推测';Cond='通用';Note='流送池收缩前的等待时长。延长可减少池重分配与帧时间抖动，代价是显存回收变慢。'}
+ [pscustomobject]@{Key='max_frame_copy_bytes';Default='67108864';Suggest='100663296';Tier='SAFE';Rule='copyband';Src='配置';Impact='显存·拷贝限流';Conf='推测';Cond='通用';Note='单帧 GPU 内拷贝上限（字节），占用显存带宽。通常冗余度较高；放宽对帧率影响有限，小显存设备可能放大单帧压力。'}
+ [pscustomobject]@{Key='max_frame_upload_bytes';Default='16777216';Suggest='16777216';Tier='SAFE';Rule='keep';Src='引擎';Impact='显存·上传限流';Conf='推定';Cond='通用';Note='单帧 CPU→GPU 上传上限，默认 16 MB，走 PCIe 带宽。作为抑制单帧 PCIe 尖峰的节流阈值，放宽可能放大帧时间波动。'}
+ [pscustomobject]@{Key='pipeline_cache_prune_size';Default='256';Suggest='512';Tier='SAFE';Rule='keep';Src='引擎';Impact='着色器·缓存容量';Conf='推测';Cond='通用';Note='管线缓存裁剪阈值。调大可减少着色器重编译卡顿，代价是缓存文件增大、磁盘占用上升。'}
+ [pscustomobject]@{Key='pso_cache_prune_size';Default='512';Suggest='1024';Tier='SAFE';Rule='keep';Src='引擎';Impact='着色器·缓存容量';Conf='推测';Cond='通用';Note='PSO blob 缓存裁剪阈值，机制同上。'}
  [pscustomobject]@{Key='anti_lag';Default='true';Suggest='false';Tier='SAFE';Rule='keep';Src='画面';Impact='延迟·帧节奏';Conf='推定';Cond='取决于驱动侧抗延迟功能的启用状态';Note='引擎侧帧节奏控制开关。与驱动侧抗延迟机制作用于同一提交环节；两者同时启用时，帧提交时机将被两套机制共同干预。'}
- [pscustomobject]@{Key='memory_size';Default='26214400';Suggest='78643200';Tier='SAFE';Rule='wwisepool';Src='配置';Impact='音频·缓冲';Conf='确定';Cond='物理内存16GB以上且游戏所在磁盘为SSD';Note='Wwise 流式 I/O 缓冲池字节数（uIOMemorySize）。缓冲块数 = 本值 / granularity；默认 25 MB / 128 KB = 200 块。影响音频预读能力，不直接改变帧率。'}
- [pscustomobject]@{Key='max_concurrent_io';Default='200';Suggest='200';Tier='SAFE';Rule='ioconcurrent';Src='配置';Impact='音频·IO';Conf='确定';Cond='无改动依据';Note='Wwise 并发 I/O 请求数（uMaxConcurrentIO）。SDK 默认 8，默认 200 与默认缓冲块数配套；降低并发未见显著收益。'}
- [pscustomobject]@{Key='verbose';Default='true';Suggest='false';Tier='SAFE';Rule='keep';Src='引擎';Impact='磁盘·写日志';Conf='推定';Cond='通用';Note='EOS 详细日志开关。开启后持续写入日志，产生额外磁盘 I/O；关闭对帧率影响有限，主要收益是降低日志量。'}
- [pscustomobject]@{Key='use_syncapi';Default='true';Suggest='true';Tier='SAFE';Rule='keep';Src='引擎';Impact='CPU·空闲';Conf='推定';Cond='无改动依据';Note='线程池空闲时采用阻塞等待而非自旋。降低空闲 CPU 占用，高负载下无差异。'}
- [pscustomobject]@{Key='command_queue_size';Default='524288';Suggest='524288';Tier='SAFE';Rule='keep';Src='引擎';Impact='音频·命令';Conf='确定';Cond='无改动依据';Note='Wwise 音频命令队列字节数（uCommandQueueSize）。默认 512 KB，为 SDK 默认值的 2 倍；队列满时会丢弃音频命令，默认容量已有余量。'}
- [pscustomobject]@{Key='pool_size';Default='33554432';Suggest='33554432';Tier='SAFE';Rule='keep';Src='引擎';Impact='内存·音频池';Conf='确定';Cond='无改动依据';Note='Wwise 声音引擎默认内存池（uDefaultPoolSize）。默认 32 MB，为 SDK 默认值的 2 倍；影响可同时驻留的声音对象数量。'}
- [pscustomobject]@{Key='num_refills_in_voice';Default='4';Suggest='4';Tier='SAFE';Rule='keep';Src='引擎';Impact='音频·缓冲';Conf='确定';Cond='无改动依据';Note='流式声音缓冲补充次数（uNumRefillsInVoice），SDK 默认 4。影响流式音频的缓冲深度与抗抖动能力。'}
- [pscustomobject]@{Key='memory_alignment';Default='64';Suggest='64';Tier='SAFE';Rule='keep';Src='引擎';Impact='音频·IO对齐';Conf='确定';Cond='无改动依据';Note='Wwise I/O 内存对齐字节数（uIOMemoryAlignment）。默认 64，SDK 默认 4。修改将影响底层 I/O 请求的对齐方式。'}
- [pscustomobject]@{Key='scratch_space';Default='128';Suggest='128';Tier='SAFE';Rule='keep';Src='引擎';Impact='显存·上传缓冲';Conf='推定';Cond='无改动依据';Note='D3D12 临时与上传缓冲区（MB）。默认 128 MB，冗余度充足；设置过小可能导致上传等待。'}
- [pscustomobject]@{Key='atmospheric_scattering_ambience_samples';Default='128';Suggest='64';Tier='TRADEOFF';Rule='keep';Src='画面';Impact='GPU·画质/帧率';Conf='确定';Cond='GPU瓶颈且开放天空场景时';Note='环境散射积分采样数（等于 GPU 着色器循环次数）。减半可近似线性降低该 pass 的 GPU 开销并提升帧率；画面可能出现色带或噪点。'}
- [pscustomobject]@{Key='sun_step_length_multiplier';Default='0.17';Suggest='0.4';Tier='TRADEOFF';Rule='keep';Src='画面';Impact='GPU·画质/帧率';Conf='确定';Cond='GPU瓶颈且开放天空场景时';Note='太阳方向 ray-march 步长缩放系数（步数与系数成反比）。默认 0.17 调整为 0.4 约使步数降至 42.5%，可降低 GPU 开销；步长过大会产生条带伪影。'}
- [pscustomobject]@{Key='cloud_step_length';Default='8';Suggest='8';Tier='TRADEOFF';Rule='keep';Src='画面';Impact='GPU·画质/帧率';Conf='推定';Cond='体积云 GPU 成本占比高时';Note='体积云光线步进步长。调大可减少步数、降低 GPU 开销；过大将产生层状伪影。本工具不自动修改该项，仅提供调整方向。'}
- [pscustomobject]@{Key='realtime_cubemaps_nr_regular_samples';Default='32';Suggest='32';Tier='TRADEOFF';Rule='keep';Src='画面';Impact='GPU·画质/帧率';Conf='推定';Cond='实时反射 GPU 成本占比高时';Note='实时反射 cubemap 常规采样数。减小可降低 GPU 开销，反射画面将变模糊；同族的 far、space 与 downsample 另有独立采样组。'}
- [pscustomobject]@{Key='fullscreen';Default='false';Suggest='false';Tier='TRADEOFF';Rule='keep';Src='画面';Impact='延迟·合成';Conf='确定';Cond='与borderless_fullscreen必须一真一假';Note='独占全屏开关。绕过 DWM 合成，降低输入延迟并使驱动侧低延迟特性完整生效；代价是 Alt-Tab 切换变慢、部分叠加层（overlay）显示异常。必须与 borderless_fullscreen 一真一假。'}
- [pscustomobject]@{Key='borderless_fullscreen';Default='true';Suggest='true';Tier='TRADEOFF';Rule='keep';Src='画面';Impact='延迟·合成';Conf='确定';Cond='与fullscreen必须一真一假';Note='无边框全屏开关。经 DWM 合成，增加额外一帧延迟。必须与 fullscreen 一真一假，否则组合非法；修改 fullscreen 时本项需同步取反。'}
- [pscustomobject]@{Key='max_frame_updates';Default='32';Suggest='64';Tier='CAUTION';Rule='frameupdates';Src='引擎';Impact='帧时间·尖峰';Conf='推定';Cond='取决于纹理加载速度与帧时间余量';Note='单帧允许处理的流送更新条数。调高会放大渲染线程的偶发尖峰；该取舍取决于纹理加载速度与帧时间余量。'}
+ [pscustomobject]@{Key='memory_size';Default='26214400';Suggest='78643200';Tier='SAFE';Rule='wwisepool';Src='配置';Impact='音频·缓冲池';Conf='确定';Cond='物理内存 16 GB 以上且游戏所在磁盘为 SSD';Note='Wwise 流式 I/O 缓冲池字节数（uIOMemorySize）。缓冲块数 = 本值 / granularity；默认 25 MB / 128 KB = 200 块。影响音频预读能力，不直接改变帧率。'}
+ [pscustomobject]@{Key='max_concurrent_io';Default='200';Suggest='200';Tier='SAFE';Rule='ioconcurrent';Src='配置';Impact='音频·IO并发';Conf='确定';Cond='通用';Note='Wwise 并发 I/O 请求数（uMaxConcurrentIO）。SDK 默认 8，默认 200 与默认缓冲块数配套；降低并发未见显著收益。'}
+ [pscustomobject]@{Key='verbose';Default='true';Suggest='false';Tier='SAFE';Rule='keep';Src='引擎';Impact='系统·日志级别';Conf='推定';Cond='通用';Note='EOS 详细日志开关。开启后持续写入日志，产生额外磁盘 I/O；对帧率影响极低。'}
+ [pscustomobject]@{Key='use_syncapi';Default='true';Suggest='true';Tier='SAFE';Rule='keep';Src='引擎';Impact='CPU·空闲策略';Conf='推定';Cond='通用';Note='线程池空闲时采用阻塞等待而非自旋。降低空闲 CPU 占用，高负载下无差异。'}
+ [pscustomobject]@{Key='command_queue_size';Default='524288';Suggest='524288';Tier='SAFE';Rule='keep';Src='引擎';Impact='音频·命令队列';Conf='确定';Cond='通用';Note='Wwise 音频命令队列字节数（uCommandQueueSize）。默认 512 KB，为 SDK 默认值的 2 倍；队列满时会丢弃音频命令，默认容量已有余量。'}
+ [pscustomobject]@{Key='pool_size';Default='33554432';Suggest='33554432';Tier='SAFE';Rule='keep';Src='引擎';Impact='音频·内存池';Conf='确定';Cond='通用';Note='Wwise 声音引擎默认内存池（uDefaultPoolSize）。默认 32 MB，为 SDK 默认值的 2 倍；影响可同时驻留的声音对象数量。'}
+ [pscustomobject]@{Key='num_refills_in_voice';Default='4';Suggest='4';Tier='SAFE';Rule='keep';Src='引擎';Impact='音频·缓冲补充';Conf='确定';Cond='通用';Note='流式声音缓冲补充次数（uNumRefillsInVoice），SDK 默认 4。影响流式音频的缓冲深度与抗抖动能力。'}
+ [pscustomobject]@{Key='memory_alignment';Default='64';Suggest='64';Tier='SAFE';Rule='keep';Src='引擎';Impact='音频·内存对齐';Conf='确定';Cond='通用';Note='Wwise I/O 内存对齐字节数（uIOMemoryAlignment）。默认 64，SDK 默认 4。修改将影响底层 I/O 请求的对齐方式。'}
+ [pscustomobject]@{Key='scratch_space';Default='128';Suggest='128';Tier='SAFE';Rule='keep';Src='引擎';Impact='显存·临时缓冲';Conf='推定';Cond='通用';Note='D3D12 临时与上传缓冲区（MB）。默认 128 MB，冗余度充足；设置过小可能导致上传等待。'}
+ [pscustomobject]@{Key='atmospheric_scattering_ambience_samples';Default='128';Suggest='64';Tier='TRADEOFF';Rule='keep';Src='画面';Impact='GPU·着色负载';Conf='确定';Cond='GPU 瓶颈且开放天空场景时';Note='环境散射积分采样数（等于 GPU 着色器循环次数）。减半可近似线性降低该 pass 的 GPU 开销并提升帧率；画面可能出现色带或噪点。'}
+ [pscustomobject]@{Key='sun_step_length_multiplier';Default='0.17';Suggest='0.4';Tier='TRADEOFF';Rule='keep';Src='画面';Impact='GPU·着色负载';Conf='确定';Cond='GPU 瓶颈且开放天空场景时';Note='太阳方向 ray-march 步长缩放系数（步数与系数成反比）。默认 0.17 调整为 0.4 约使步数降至 42.5%，可降低 GPU 开销；步长过大会产生条带伪影。'}
+ [pscustomobject]@{Key='cloud_step_length';Default='8';Suggest='8';Tier='TRADEOFF';Rule='keep';Src='画面';Impact='GPU·着色负载';Conf='推定';Cond='体积云 GPU 成本占比高时';Note='体积云光线步进步长。调大可减少步数、降低 GPU 开销；过大将产生层状伪影。本工具不自动修改该项，仅提供调整方向。'}
+ [pscustomobject]@{Key='realtime_cubemaps_nr_regular_samples';Default='32';Suggest='32';Tier='TRADEOFF';Rule='keep';Src='画面';Impact='GPU·着色负载';Conf='推定';Cond='实时反射 GPU 成本占比高时';Note='实时反射 cubemap 常规采样数。减小可降低 GPU 开销，反射画面将变模糊；同族的 far、space 与 downsample 另有独立采样组。'}
+ [pscustomobject]@{Key='fullscreen';Default='false';Suggest='false';Tier='TRADEOFF';Rule='keep';Src='画面';Impact='渲染·全屏模式';Conf='确定';Cond='与 borderless_fullscreen 必须一真一假';Note='独占全屏开关。绕过 DWM 合成，降低输入延迟并使驱动侧低延迟特性完整生效；代价是 Alt-Tab 切换变慢、部分叠加层（overlay）显示异常。必须与 borderless_fullscreen 一真一假。'}
+ [pscustomobject]@{Key='borderless_fullscreen';Default='true';Suggest='true';Tier='TRADEOFF';Rule='keep';Src='画面';Impact='渲染·全屏模式';Conf='确定';Cond='与 fullscreen 必须一真一假';Note='无边框全屏开关。经 DWM 合成，增加额外一帧延迟。必须与 fullscreen 一真一假，否则组合非法；修改 fullscreen 时本项需同步取反。'}
+ [pscustomobject]@{Key='max_frame_updates';Default='32';Suggest='64';Tier='CAUTION';Rule='frameupdates';Src='引擎';Impact='显存·更新条数';Conf='推定';Cond='取决于纹理加载速度与帧时间余量';Note='单帧允许处理的流送更新条数。调高会放大渲染线程的偶发尖峰；该取舍取决于纹理加载速度与帧时间余量。'}
  [pscustomobject]@{Key='granularity';Default='131072';Suggest='131072';Tier='CAUTION';Rule='keep';Src='引擎';Impact='音频·IO块';Conf='确定';Cond='改动会破坏配套项';Note='Wwise 单次 I/O 请求字节数（uGranularity）。默认 128 KB，SDK 默认 16 KB。修改将破坏与 memory_size、max_concurrent_io 的缓冲块数配套关系。'}
- [pscustomobject]@{Key='target_buffering_length';Default='720';Suggest='720';Tier='CAUTION';Rule='keep';Src='引擎';Impact='音频·预读';Conf='确定';Cond='改动会破坏配套项';Note='Wwise 目标预读缓冲时长（fTargetAutoStmBufferLength），单位毫秒。调大须同步增加 memory_size，否则目标值不可达。'}
- [pscustomobject]@{Key='use_blocking_io';Default='false';Suggest='false';Tier='CAUTION';Rule='keep';Src='引擎';Impact='CPU·音频线程';Conf='确定';Cond='无改动依据';Note='Wwise I/O 调度模式；false 为 deferred（延迟提交）。设为 true 将退化为阻塞式调度并额外创建线程，增加 CPU 占用。'}
- [pscustomobject]@{Key='num_samples_per_frame';Default='1024';Suggest='1024';Tier='CAUTION';Rule='keep';Src='引擎';Impact='音频·延迟';Conf='确定';Cond='仅在音频畸变且排除链路问题后';Note='音频渲染每块样本数（uNumSamplesPerFrame）。1024 样本在 48 kHz 下约 21.3 ms；改为 2048 将增加约 21 ms 音频延迟，仅扩大缓冲而不消除链路瓶颈。'}
- [pscustomobject]@{Key='max_cache_ratio';Default='1';Suggest='1';Tier='CAUTION';Rule='keep';Src='引擎';Impact='未知';Conf='猜测';Cond='判定逻辑未知';Note='Wwise 缓存占比上限（fMaxCacheRatio）。判定逻辑未见公开说明，改动后果未知。'}
- [pscustomobject]@{Key='reflex_mode';Default='2';Suggest='0';Tier='CAUTION';Rule='reflex';Src='配置';Impact='延迟·CPU提交·帧时间';Conf='确定';Cond='仅 NVIDIA 显卡与驱动侧功能支持时生效';Note='NVIDIA Reflex 模式；0 = 关闭，2 = On + Boost。启用时限制 CPU 提前提交的帧数，改变帧提交节奏，作用于 CPU 侧提交时机，不直接改变渲染工作量；可观测指标为平均帧率与帧时间分布。'}
- [pscustomobject]@{Key='vsync';Default='false';Suggest='false';Tier='CAUTION';Rule='keep';Src='引擎';Impact='延迟·同步';Conf='确定';Cond='高刷屏且使用 VRR 时';Note='垂直同步开关。无边框模式下关闭 Vsync 无法获得低延迟，仍受 DWM 刷新率同步限制；VRR 配合帧率上限是另一种同步方式。'}
- [pscustomobject]@{Key='adapter_index';Default='0';Suggest='0';Tier='CAUTION';Rule='adapter';Src='配置';Impact='GPU·适配器';Conf='确定';Cond='多 GPU 机器的该值取决于 D3D 枚举顺序';Note='D3D 适配器索引。存在多个显示适配器时（核显加独显、多张独显、不同厂商组合），索引 0 未必指向实际渲染所用的 GPU；该值指向其他设备时，整套调优将作用于错误的设备。'}
- [pscustomobject]@{Key='d3d_debug';Default='false';Suggest='false';Tier='CAUTION';Rule='keep';Src='引擎';Impact='帧率·大幅下降';Conf='确定';Cond='开启会大幅降低帧率';Note='D3D 调试层开关。开启会显著增加渲染开销并大幅降低帧率。'}
- [pscustomobject]@{Key='drs_minimum_scale_factor';Default='0.5';Suggest='0.5';Tier='CAUTION';Rule='keep';Src='引擎';Impact='画质/帧率';Conf='推定';Cond='实际开关在user_settings.config';Note='动态分辨率下限比例。实际开关由 user_settings.config 控制，settings.ini 中的对应段可能被用户配置覆盖，修改本项未必生效。'}
- [pscustomobject]@{Key='max_num_jobs';Default='8192';Suggest='8192';Tier='CAUTION';Rule='keep';Src='引擎';Impact='CPU·队列';Conf='推定';Cond='无改动依据';Note='作业队列容量上限（非并发度）。默认值 8192 在 14 条作业线程下不会成为瓶颈。'}
- [pscustomobject]@{Key='metrics_batch_timer';Default='30';Suggest='30';Tier='CAUTION';Rule='keep';Src='引擎';Impact='未知';Conf='猜测';Cond='未验证开销';Note='遥测批量上报周期，单位推测为秒。无证据表明其造成周期性帧时间尖峰。'}
- [pscustomobject]@{Key='minimum_unseen_delay';Default='60';Suggest='60';Tier='CAUTION';Rule='keep';Src='引擎';Impact='显存·卸载';Conf='猜测';Cond='判定逻辑未知';Note='纹理未被渲染多久后进入卸载候选。判定逻辑未公开，改动后果未知。'}
- [pscustomobject]@{Key='inv_texel_density';Default='4';Suggest='4';Tier='CAUTION';Rule='keep';Src='引擎';Impact='未知';Conf='猜测';Cond='判定逻辑未知';Note='纹素密度相关项。其语义与单位未见可靠公开说明，改动后果未知。'}
- [pscustomobject]@{Key='max_mip';Default='0';Suggest='0';Tier='CAUTION';Rule='keep';Src='引擎';Impact='未知';Conf='猜测';Cond='判定逻辑未知';Note='流送 Mip 上限。取值语义未见可靠公开说明，改动后果未知。'}
- [pscustomobject]@{Key='memory_threshold_fast_shrink';Default='33554432';Suggest='33554432';Tier='CAUTION';Rule='keep';Src='引擎';Impact='未知';Conf='推测';Cond='判定逻辑未知';Note='触发流送池快速收缩的内存阈值（默认 32 MB）。可由命名推断其作用方向，但具体判定逻辑未公开。'}
- [pscustomobject]@{Key='initialize_at_max';Default='false';Suggest='false';Tier='CAUTION';Rule='keep';Src='引擎';Impact='显存·首帧';Conf='推测';Cond='无改动依据';Note='是否按最高 Mip 初始化纹理。改动会改变首次加载行为与首帧显存占用。'}
- [pscustomobject]@{Key='streaming_update_quick_drops';Default='false';Suggest='false';Tier='CAUTION';Rule='keep';Src='引擎';Impact='未知';Conf='猜测';Cond='判定逻辑未知';Note='流送更新快速丢弃开关。判定逻辑未公开，改动后果未知。'}
- [pscustomobject]@{Key='drop_dynamic_textures_on_renderer_reload';Default='false';Suggest='false';Tier='CAUTION';Rule='keep';Src='引擎';Impact='画质·重载';Conf='推测';Cond='无改动依据';Note='渲染器重载时是否丢弃动态纹理。改动可能导致重载后纹理缺失。'}
- [pscustomobject]@{Key='streaming_texture_pool_size';Default='0';Suggest='0';Tier='CAUTION';Rule='keep';Src='引擎';Impact='显存·池';Conf='确定';Cond='无改动依据';Note='Stingray 官方段：可流送纹理共享内存上限（MB），官方默认 256。置 0 表示由 texture_streaming 扩展段接管；填入非 0 值会与扩展段冲突。'}
- [pscustomobject]@{Key='streaming_buffer_size';Default='0';Suggest='0';Tier='CAUTION';Rule='keep';Src='引擎';Impact='内存·载入';Conf='确定';Cond='无改动依据';Note='Stingray 官方段：从磁盘载入新纹理的缓冲区大小（MB），官方默认 24。置 0 表示由扩展段接管。'}
- [pscustomobject]@{Key='max_num_jobs_data_dir';Default='32768';Suggest='32768';Tier='CAUTION';Rule='keep';Src='引擎';Impact='CPU·加载队列';Conf='推定';Cond='无改动依据';Note='数据目录加载阶段作业队列容量上限（非并发度）。'}
+ [pscustomobject]@{Key='target_buffering_length';Default='720';Suggest='720';Tier='CAUTION';Rule='keep';Src='引擎';Impact='音频·预读缓冲';Conf='确定';Cond='改动会破坏配套项';Note='Wwise 目标预读缓冲时长（fTargetAutoStmBufferLength），单位毫秒。调大须同步增加 memory_size，否则目标值不可达。'}
+ [pscustomobject]@{Key='use_blocking_io';Default='false';Suggest='false';Tier='CAUTION';Rule='keep';Src='引擎';Impact='音频·调度模式';Conf='确定';Cond='通用';Note='Wwise I/O 调度模式；false 为 deferred（延迟提交）。设为 true 将退化为阻塞式调度并额外创建线程，增加 CPU 占用。'}
+ [pscustomobject]@{Key='num_samples_per_frame';Default='1024';Suggest='1024';Tier='CAUTION';Rule='keep';Src='引擎';Impact='音频·渲染延迟';Conf='确定';Cond='仅在音频畸变且排除链路问题后';Note='音频渲染每块样本数（uNumSamplesPerFrame）。1024 样本在 48 kHz 下约 21.3 ms；改为 2048 将增加约 21 ms 音频延迟，仅扩大缓冲而不消除链路瓶颈。'}
+ [pscustomobject]@{Key='max_cache_ratio';Default='1';Suggest='1';Tier='CAUTION';Rule='keep';Src='引擎';Impact='音频·缓存配置';Conf='猜测';Cond='通用';Note='Wwise 缓存占比上限（fMaxCacheRatio）。判定逻辑未见公开说明，改动后果未知。'}
+ [pscustomobject]@{Key='reflex_mode';Default='2';Suggest='0';Tier='CAUTION';Rule='reflex';Src='配置';Impact='延迟·提交同步';Conf='确定';Cond='仅 NVIDIA 显卡与驱动侧功能支持时生效，开启后小幅降帧';Note='NVIDIA Reflex 模式；0 = 关闭，1 = 关闭（诊断），2 = 开启，3 = 开启 + 增强。启用时限制 CPU 提前提交的帧数，改变帧提交节奏，作用于 CPU 侧提交时机，不直接改变渲染工作量；可观测指标为平均帧率与帧时间分布。'}
+ [pscustomobject]@{Key='vsync';Default='false';Suggest='false';Tier='CAUTION';Rule='keep';Src='引擎';Impact='渲染·垂直同步';Conf='确定';Cond='高刷屏且开启 VRR 时';Note='垂直同步开关。无边框模式下关闭 Vsync 无法获得低延迟，仍受 DWM 刷新率同步限制；VRR 配合帧率上限是另一种同步方式。'}
+ [pscustomobject]@{Key='adapter_index';Default='0';Suggest='0';Tier='CAUTION';Rule='adapter';Src='配置';Impact='GPU·设备选择';Conf='确定';Cond='多 GPU 机器的该值取决于 D3D 枚举顺序';Note='D3D 适配器索引。存在多个显示适配器时（核显加独显、多张独显、不同厂商组合），索引 0 未必指向实际渲染所用的 GPU；该值指向其他设备时，整套调优将作用于错误的设备。'}
+ [pscustomobject]@{Key='d3d_debug';Default='false';Suggest='false';Tier='CAUTION';Rule='keep';Src='引擎';Impact='渲染·D3D调试层';Conf='确定';Cond='开启后大幅降帧';Note='D3D 调试层开关。开启会显著增加渲染开销并大幅降低帧率。'}
+ [pscustomobject]@{Key='drs_minimum_scale_factor';Default='0.5';Suggest='0.5';Tier='CAUTION';Rule='keep';Src='引擎';Impact='GPU·分辨率下限';Conf='推定';Cond='实际开关在 user_settings.config';Note='动态分辨率下限比例。实际开关由 user_settings.config 控制，settings.ini 中的对应段可能被用户配置覆盖，修改本项未必生效。'}
+ [pscustomobject]@{Key='max_num_jobs';Default='8192';Suggest='8192';Tier='CAUTION';Rule='keep';Src='引擎';Impact='CPU·作业队列';Conf='推定';Cond='通用';Note='作业队列容量上限（非并发度）。默认值 8192 在 14 条作业线程下不会成为瓶颈。'}
+ [pscustomobject]@{Key='metrics_batch_timer';Default='30';Suggest='30';Tier='CAUTION';Rule='keep';Src='引擎';Impact='系统·遥测周期';Conf='猜测';Cond='未验证开销';Note='遥测批量上报周期，单位推测为秒。无证据表明其造成周期性帧时间尖峰。'}
+ [pscustomobject]@{Key='minimum_unseen_delay';Default='60';Suggest='60';Tier='CAUTION';Rule='keep';Src='引擎';Impact='显存·卸载判定';Conf='猜测';Cond='通用';Note='纹理未被渲染多久后进入卸载候选。判定逻辑未公开，改动后果未知。'}
+ [pscustomobject]@{Key='inv_texel_density';Default='4';Suggest='4';Tier='CAUTION';Rule='keep';Src='引擎';Impact='显存·纹素密度';Conf='猜测';Cond='通用';Note='纹素密度相关项。其语义与单位未见可靠公开说明，改动后果未知。'}
+ [pscustomobject]@{Key='max_mip';Default='0';Suggest='0';Tier='CAUTION';Rule='keep';Src='引擎';Impact='显存·Mip上限';Conf='猜测';Cond='通用';Note='流送 Mip 上限。取值语义未见可靠公开说明，改动后果未知。'}
+ [pscustomobject]@{Key='memory_threshold_fast_shrink';Default='33554432';Suggest='33554432';Tier='CAUTION';Rule='keep';Src='引擎';Impact='显存·卸载阈值';Conf='推测';Cond='通用';Note='触发流送池快速收缩的内存阈值（默认 32 MB）。可由命名推断其作用方向，但具体判定逻辑未公开。'}
+ [pscustomobject]@{Key='initialize_at_max';Default='false';Suggest='false';Tier='CAUTION';Rule='keep';Src='引擎';Impact='显存·初始化策略';Conf='推测';Cond='通用';Note='是否按最高 Mip 初始化纹理。改动会改变首次加载行为与首帧显存占用。'}
+ [pscustomobject]@{Key='streaming_update_quick_drops';Default='false';Suggest='false';Tier='CAUTION';Rule='keep';Src='引擎';Impact='显存·更新策略';Conf='猜测';Cond='通用';Note='流送更新快速丢弃开关。判定逻辑未公开，改动后果未知。'}
+ [pscustomobject]@{Key='drop_dynamic_textures_on_renderer_reload';Default='false';Suggest='false';Tier='CAUTION';Rule='keep';Src='引擎';Impact='显存·重载行为';Conf='推测';Cond='通用';Note='渲染器重载时是否丢弃动态纹理。改动可能导致重载后纹理缺失。'}
+ [pscustomobject]@{Key='streaming_texture_pool_size';Default='0';Suggest='0';Tier='CAUTION';Rule='keep';Src='引擎';Impact='显存·池容量';Conf='确定';Cond='通用';Note='Stingray 官方段：可流送纹理共享内存上限（MB），官方默认 256。置 0 表示由 texture_streaming 扩展段接管；填入非 0 值会与扩展段冲突。'}
+ [pscustomobject]@{Key='streaming_buffer_size';Default='0';Suggest='0';Tier='CAUTION';Rule='keep';Src='引擎';Impact='内存·流送缓冲';Conf='确定';Cond='通用';Note='Stingray 官方段：从磁盘载入新纹理的缓冲区大小（MB），官方默认 24。置 0 表示由扩展段接管。'}
+ [pscustomobject]@{Key='max_num_jobs_data_dir';Default='32768';Suggest='32768';Tier='CAUTION';Rule='keep';Src='引擎';Impact='CPU·加载队列';Conf='推定';Cond='通用';Note='数据目录加载阶段作业队列容量上限（非并发度）。'}
 )
 # ===== 配置区结束 =====
 
@@ -340,19 +344,19 @@ function Get-HW([string]$iniPath){
   try {
     $root=[IO.Path]::GetPathRoot([IO.Path]::GetFullPath($iniPath))
     $letter=$root.Substring(0,1)
-    $pd=$null
+    # 只查询 settings.ini 所在卷对应的磁盘；无法建立映射时保持“未知”，不猜测第一块物理盘。
+    $diskObj=$null
     try {
-      $part=Get-Partition -DriveLetter $letter -ErrorAction Stop
-      $pd=@(Get-PhysicalDisk -ErrorAction Stop | Where-Object { $_.DeviceId -eq $part.DiskNumber } | Select-Object -First 1)
+      $part=Get-Partition -DriveLetter $letter -ErrorAction Stop | Select-Object -First 1
+      if($null -ne $part){ $diskObj=Get-Disk -Number $part.DiskNumber -ErrorAction Stop }
     } catch {}
-    if(-not $pd -or $pd.Count -eq 0){ $pd=@(Get-PhysicalDisk -ErrorAction Stop | Select-Object -First 1) }
-    if($pd.Count -gt 0){
-      $bus=[string]$pd[0].BusType; $mt=[string]$pd[0].MediaType
+    if($diskObj){
+      $bus=[string]$diskObj.BusType; $mt=[string]$diskObj.MediaType
       if($bus -match 'NVMe'){ $disk='NVMe SSD' }
       elseif($bus -match 'SATA' -and $mt -match 'SSD'){ $disk='SATA SSD' }
       elseif($mt -match 'HDD'){ $disk='HDD' }
       elseif($mt -match 'SSD'){ $disk='SSD' }
-      else { $disk=("$bus/$mt").Trim('/') }
+      elseif($bus -or $mt){ $disk=("$bus/$mt").Trim('/') }
     }
   } catch { $disk='未知' }
   return [pscustomobject]@{Logical=$logical;Physical=$physical;RAM=$ram;VRAM=$vram;GPU=$gpu;Vendor=$vendor;Disk=$disk;CPUName=$cpuName}
@@ -392,7 +396,7 @@ function Get-LocalSuggest([object]$p,[object]$hw){
     }
     'reflex' {
       if($hw.Vendor -ne 'NVIDIA'){ return [pscustomobject]@{V=$p.Suggest;Why=("GPU 厂商 {0}；该项依赖 NVIDIA 驱动侧支持。" -f $hw.Vendor)} }
-      return [pscustomobject]@{V=$p.Suggest;Why=('0=关闭，2=On+Boost。')}
+      return [pscustomobject]@{V=$p.Suggest;Why=('0=关闭，1=关闭（诊断），2=开启，3=开启+增强。')}
     }
     'hdr' {
       return [pscustomobject]@{V=$p.Default;Why=('取决于显示器 HDR 支持与 Windows HDR 开关，不自动开启。')}
@@ -458,49 +462,210 @@ function Confirm-Write([array]$changes,[string]$ctx){
   return ($ok -eq 'y')
 }
 
-function Apply-Changes([string]$path,[string]$text,[array]$changes){
-  $rawA=Get-Raw $path
-  $bak=New-Backup $path
-  Write-Host ("备份: {0}" -f [IO.Path]::GetFileName($bak))
-  $new=$text; $miss=@(); $dupFix=@()
+function Test-ChangeSet([string]$text,[array]$changes){
+  $errors=@(); $new=$text
   foreach($c in $changes){
-    $r=Set-Val $new $c.Key $c.To
-    if($r.Count -eq 0){ $miss+=$c.Key; continue }
-    if($r.Count -gt 1){ $dupFix+=("{0}({1}处)" -f $c.Key,$r.Count) }
+    $p=@($Params | Where-Object { $_.Key -eq $c.Key }) | Select-Object -First 1
+    if($null -eq $p){ $errors+="未知参数: $($c.Key)"; continue }
+    if($Protected -contains $c.Key){ $errors+="保护参数禁止修改: $($c.Key)"; continue }
+    if($null -eq (Get-Val $new $c.Key)){ $errors+="文件中不存在参数: $($c.Key)"; continue }
+    if(-not (Test-Val ([string]$c.To) $p.Default)){ $errors+="参数类型不匹配: $($c.Key)=$($c.To)"; continue }
+    $r=Set-Val $new $c.Key ([string]$c.To)
     $new=$r.Text
   }
-  $combos=Get-ComboWarnings $new
-  if($combos.Count -gt 0){
-    Write-Host ''
-    Write-Host '==== 警告: 写入后组合冲突 ===='
-    foreach($w in $combos){ Write-Host ("  {0}" -f $w) }
-    Write-Host '  参数联动冲突：取值不满足互斥条件。可使用备份还原。'
+  foreach($w in (Get-ComboWarnings $new)){ $errors+=$w }
+  return [pscustomobject]@{Valid=($errors.Count -eq 0);Errors=$errors;Text=$new}
+}
+
+function Apply-Changes([string]$path,[string]$text,[array]$changes){
+  if($changes.Count -eq 0){ Write-Host '没有需要修改的项目。'; return $false }
+  $rawA=Get-Raw $path
+  $expectedBytes=$Latin.GetBytes($text)
+  $stale=($rawA.Length -ne $expectedBytes.Length)
+  if(-not $stale){ for($bi=0;$bi -lt $rawA.Length;$bi++){ if($rawA[$bi] -ne $expectedBytes[$bi]){ $stale=$true; break } } }
+  if($stale){ Write-Host '文件在读取后已被其他程序修改；为避免覆盖新内容，本次写入已取消，请重新载入。'; return $false }
+  $check=Test-ChangeSet $text $changes
+  if(-not $check.Valid){
+    Write-Host '' '==== 修改已阻止：配置验证失败 ===='
+    foreach($e in $check.Errors){ Write-Host ("  - {0}" -f $e) }
+    Write-Host '原文件未被修改，也未创建新备份。'
+    return $false
   }
-  [IO.File]::WriteAllBytes($path,$Latin.GetBytes($new))
-  $rawB=Get-Raw $path
-  $d=Get-ByteDiff $rawA $rawB
-  Write-Host ''
-  Write-Host '写入完成，校验：'
-  $chk=Get-IniText $path
-  $bad=0
-  foreach($c in $changes){
-    if($miss -contains $c.Key){ Write-Host ("  [SKIP] {0} 文件中未找到该键，跳过" -f (Pad $c.Key 46)); continue }
-    $v=Get-Val $chk $c.Key
-    if($v -eq $c.To){ Write-Host ("  [OK]   {0} {1}" -f (Pad $c.Key 46),$v) }
-    else{ Write-Host ("  [FAIL] {0} 期望 {1} 实际 {2}" -f (Pad $c.Key 46),$c.To,$v); $bad++ }
+  $dir=[IO.Path]::GetDirectoryName($path)
+  $tmp=[IO.Path]::Combine($dir,('.settings.ini.'+[guid]::NewGuid().ToString('N')+'.tmp'))
+  $bak=$null
+  try {
+    $newBytes=$Latin.GetBytes($check.Text)
+    [IO.File]::WriteAllBytes($tmp,$newBytes)
+    $verify=$Latin.GetString([IO.File]::ReadAllBytes($tmp))
+    foreach($c in $changes){
+      if((Get-Val $verify $c.Key) -ne [string]$c.To){ throw "临时文件校验失败: $($c.Key)" }
+    }
+    if((Get-ComboWarnings $verify).Count -gt 0){ throw '临时文件组合校验失败' }
+    # 只有候选文件完整通过校验后才创建备份并提交。
+    $bak=New-Backup $path
+    try { [IO.File]::Replace($tmp,$path,$null) }
+    catch {
+      # 同卷临时文件优先使用原子替换；不支持 Replace 的文件系统退回覆盖移动。
+      [IO.File]::Copy($tmp,$path,$true)
+      [IO.File]::Delete($tmp)
+    }
+    $rawB=Get-Raw $path
+    $chk=Get-IniText $path
+    $bad=@()
+    foreach($c in $changes){ if((Get-Val $chk $c.Key) -ne [string]$c.To){ $bad+=$c.Key } }
+    if($bad.Count -gt 0){
+      [IO.File]::Copy($bak,$path,$true)
+      throw ("提交后校验失败，已从备份恢复: {0}" -f ($bad -join ', '))
+    }
+    $d=Get-ByteDiff $rawA $rawB
+    Write-Host ("备份: {0}" -f [IO.Path]::GetFileName($bak))
+    Write-Host '' '写入完成，校验：'
+    foreach($c in $changes){ Write-Host ("  [OK] {0} {1}" -f (Pad $c.Key 46),(Get-Val $chk $c.Key)) }
+    Write-Host ("变化 {0} 行；长度 {1} -> {2}；CRLF {3} -> {4}；BOM {5} -> {6}" -f $d.Lines,$d.LenA,$d.LenB,$d.CRLF_A,$d.CRLF_B,$d.BOM_A,$d.BOM_B)
+    if($d.CRLF_A -ne $d.CRLF_B -or $d.BOM_A -ne $d.BOM_B){ Write-Host '警告：编码标记或换行数量变化，请检查文件。' }
+    Write-Host 'Steam 校验或游戏更新可能覆盖 settings.ini。'
+    return $true
   }
-  if($miss.Count -gt 0){ Write-Host ("  未找到，未修改: {0}" -f ($miss -join ', ')) }
-  if($dupFix.Count -gt 0){ Write-Host ("  同名键已全部统一: {0}" -f ($dupFix -join ', ')) }
-  if($bad -gt 0){ Write-Host ("  校验失败 {0} 项；备份文件可用于还原。" -f $bad) }
-  else{ Write-Host '  已修改项全部校验通过。' }
+  catch {
+    Write-Host ("写入失败：{0}" -f $_.Exception.Message)
+    if($bak -and [IO.File]::Exists($bak)){ try { [IO.File]::Copy($bak,$path,$true); Write-Host '已尝试恢复备份。' } catch { Write-Host '自动恢复失败，请手动从备份管理还原。' } }
+    return $false
+  }
+  finally { if([IO.File]::Exists($tmp)){ [IO.File]::Delete($tmp) } }
+}
+
+function New-OptimizationPlan([string]$profile,[string]$text,[object]$hw){
+  $spec=@()
+  switch($profile){
+    'balanced' {
+      # 仅关闭详细日志；这是减少日志写入的维护项，不承诺 FPS 提升。
+      $spec+=@{Key='verbose';To='false';Reason='减少详细日志写入；不宣称提高 FPS。';Level='低风险'}
+    }
+    'fps' {
+      # 这两项是明确的画质/性能取舍，不能冒充无损优化。
+      $spec+=@{Key='atmospheric_scattering_ambience_samples';To='64';Reason='降低环境散射采样，可能减少开放天空场景 GPU 着色负载；可能出现画面瑕疵。';Level='画质取舍'}
+      $spec+=@{Key='sun_step_length_multiplier';To='0.4';Reason='增大太阳方向步长，减少 ray-march 工作量；可能出现条带伪影。';Level='画质取舍'}
+    }
+    'frametime' {
+      # 当前参数库中驻留延迟等项目为推测级，故不自动写入。
+    }
+    'cpu' {
+      # num_reserved_threads 依赖进程实际可用逻辑处理器集合，静态 WMI 核心数不足以推导。
+    }
+    'quality' {
+      # 保持画面相关参数不变。
+    }
+    default { throw "未知优化方案: $profile" }
+  }
+  $changes=@(); $skipped=@()
+  foreach($x in $spec){
+    $p=@($Params | Where-Object { $_.Key -eq $x.Key }) | Select-Object -First 1
+    $cur=Get-Val $text $x.Key
+    if($null -eq $p -or $null -eq $cur){ $skipped+="$($x.Key)：当前 INI 不存在该键"; continue }
+    if($cur -eq $x.To){ continue }
+    $changes+= [pscustomobject]@{Key=$x.Key;From=$cur;To=$x.To;Tier=$p.Tier;Cond=$x.Reason;Level=$x.Level}
+  }
+  return [pscustomobject]@{Profile=$profile;Changes=$changes;Skipped=$skipped}
+}
+
+function Get-ProfileName([string]$profile){
+  switch($profile){
+    'balanced' { '综合维护（不承诺 FPS 提升）' }
+    'fps' { 'GPU 画质/性能取舍（开放天空场景）' }
+    'frametime' { '帧时间稳定性（不对推测项自动写值）' }
+    'cpu' { 'CPU 并行度（需运行时线程信息）' }
+    'quality' { '画质保留（不主动降低渲染质量）' }
+    default { $profile }
+  }
+}
+
+function Invoke-Optimizer([string]$path,[string]$text,[object]$hw,[string]$profile){
+  $plan=New-OptimizationPlan $profile $text $hw
   Write-Host ''
-  Write-Host '==== 改动范围（按行比对）===='
-  Write-Host ("  变化 {0} 行  行号 {1}  长度 {2} -> {3}" -f $d.Lines,$d.LineNums,$d.LenA,$d.LenB)
-  Write-Host ("  CRLF {0} -> {1}  BOM {2} -> {3}" -f $d.CRLF_A,$d.CRLF_B,$d.BOM_A,$d.BOM_B)
-  if($d.Lines -gt $changes.Count){ Write-Host '  警告: 变化行数多于修改项数，请检查意外改动。' }
-  if($d.CRLF_A -ne $d.CRLF_B -or $d.BOM_A -ne $d.BOM_B){ Write-Host '  警告: 换行或BOM发生变化，请检查文件。' }
-  Write-Host ''
-  Write-Host 'Steam 校验或游戏更新会覆盖 settings.ini，更新后需重新运行本工具。'
+  Write-Host ("==== 优化方案：{0} ====" -f (Get-ProfileName $profile))
+  if($plan.Changes.Count -eq 0){
+    Write-Host '本方案没有足够依据可自动写入的参数。当前配置保持不变。'
+  } else {
+    Write-Host '修改预览：'
+    foreach($c in $plan.Changes){ Write-Host ("  [{0}] {1}: {2} -> {3}" -f $c.Level,$c.Key,(Fmt-Val $c.From),(Fmt-Val $c.To)); Write-Host ("      {0}" -f $c.Cond) }
+    $v=Test-ChangeSet $text $plan.Changes
+    if(-not $v.Valid){ Write-Host '方案未通过验证：'; foreach($e in $v.Errors){ Write-Host ("  - {0}" -f $e) }; return $false }
+    Write-Host '以上是完整修改预览。确认后才会备份并写入。'
+    $ans=Read-Key '输入 APPLY 应用本方案，其它取消'
+    if($ans -cne 'APPLY'){ Write-Host '已取消。'; return $false }
+    return (Apply-Changes $path $text $plan.Changes)
+  }
+  if($plan.Skipped.Count -gt 0){ foreach($x in $plan.Skipped){ Write-Host ("  跳过：{0}" -f $x) } }
+  if($profile -eq 'cpu'){ Write-Host '原因：脚本只能读取系统逻辑处理器数量，不能确认游戏进程的 CPU Sets/亲和性限制。' }
+  if($profile -eq 'frametime'){ Write-Host '原因：当前帧时间相关参数的作用机制或收益缺少足够验证，不会把推测值批量写入。' }
+  if($profile -eq 'quality'){ Write-Host '画质保留方案不会主动降低渲染质量；当前没有足够依据支持自动提高画质参数。' }
+  return $false
+}
+
+function Start-OptimizerGui([string]$path,[object]$hw){
+  try {
+    Add-Type -AssemblyName System.Windows.Forms
+    Add-Type -AssemblyName System.Drawing
+  } catch { Write-Host ("无法加载 Windows Forms：{0}" -f $_.Exception.Message); return }
+  $form=New-Object Windows.Forms.Form
+  $form.Text='HD2 INI Tuner V1.2 - 优化中心'
+  $form.Size=New-Object Drawing.Size(1020,620)
+  $form.StartPosition='CenterScreen'
+  $form.MinimumSize=New-Object Drawing.Size(900,560)
+  $label=New-Object Windows.Forms.Label
+  $label.Text='选择优化目标。方案只读取并修改当前 settings.ini；不修改 user_settings.config 或其他文件。'
+  $label.Location=New-Object Drawing.Point(16,14); $label.Size=New-Object Drawing.Size(950,28)
+  $form.Controls.Add($label)
+  $combo=New-Object Windows.Forms.ComboBox
+  $combo.DropDownStyle='DropDownList'; $combo.Location=New-Object Drawing.Point(16,48); $combo.Size=New-Object Drawing.Size(520,28)
+  [void]$combo.Items.AddRange([object[]]@('综合维护（不承诺 FPS 提升）','GPU 画质/性能取舍（开放天空场景）','帧时间稳定性（不自动写入推测项）','CPU 并行度（需运行时线程信息）','画质保留（不主动降低渲染质量）'))
+  $combo.SelectedIndex=0; $form.Controls.Add($combo)
+  $grid=New-Object Windows.Forms.DataGridView
+  $grid.Location=New-Object Drawing.Point(16,90); $grid.Size=New-Object Drawing.Size(970,385)
+  $grid.Anchor='Top,Bottom,Left,Right'; $grid.ReadOnly=$true; $grid.AllowUserToAddRows=$false; $grid.AutoSizeColumnsMode='Fill'; $grid.SelectionMode='FullRowSelect'
+  foreach($col in @('风险/类型','参数','当前值','建议值','说明')){ [void]$grid.Columns.Add($col,$col) }
+  $form.Controls.Add($grid)
+  $status=New-Object Windows.Forms.Label
+  $status.Location=New-Object Drawing.Point(16,485); $status.Size=New-Object Drawing.Size(970,42); $status.Anchor='Bottom,Left,Right'; $status.Text='选择方案后生成预览。工具内置编辑项与在线 121 项手册范围不同；手册含只读/非调优参数。'
+  $form.Controls.Add($status)
+  $preview=New-Object Windows.Forms.Button; $preview.Text='刷新方案预览'; $preview.Location=New-Object Drawing.Point(16,545); $preview.Size=New-Object Drawing.Size(140,30); $preview.Anchor='Bottom,Left'
+  $apply=New-Object Windows.Forms.Button; $apply.Text='确认应用'; $apply.Location=New-Object Drawing.Point(166,545); $apply.Size=New-Object Drawing.Size(110,30); $apply.Anchor='Bottom,Left'; $apply.Enabled=$false
+  $manual=New-Object Windows.Forms.Button; $manual.Text='打开 121 项参数手册'; $manual.Location=New-Object Drawing.Point(286,545); $manual.Size=New-Object Drawing.Size(170,30); $manual.Anchor='Bottom,Left'
+  $repo=New-Object Windows.Forms.Button; $repo.Text='项目主页'; $repo.Location=New-Object Drawing.Point(466,545); $repo.Size=New-Object Drawing.Size(100,30); $repo.Anchor='Bottom,Left'
+  $close=New-Object Windows.Forms.Button; $close.Text='关闭'; $close.Location=New-Object Drawing.Point(876,545); $close.Size=New-Object Drawing.Size(110,30); $close.Anchor='Bottom,Right'
+  $form.Controls.AddRange(@($preview,$apply,$manual,$repo,$close))
+  $state=@{Plan=$null;Text=$null}
+  $makePlan={
+    $txt=Get-IniText $path
+    $id=@('balanced','fps','frametime','cpu','quality')[$combo.SelectedIndex]
+    $pl=New-OptimizationPlan $id $txt $hw
+    $state.Plan=$pl; $state.Text=$txt; $grid.Rows.Clear()
+    foreach($c in $pl.Changes){ [void]$grid.Rows.Add($c.Level,$c.Key,$c.From,$c.To,$c.Cond) }
+    $apply.Enabled=($pl.Changes.Count -gt 0)
+    if($pl.Changes.Count -eq 0){
+      $status.Text='本方案没有足够依据可自动写入的项目；未修改文件。'
+      if($id -eq 'cpu'){ $status.Text+=' CPU 线程数需要运行时亲和性/CPU Sets 信息。' }
+      if($id -eq 'frametime'){ $status.Text+=' 当前帧时间相关参数的置信度不足。' }
+    } else { $status.Text=("预览包含 {0} 项修改。请阅读每项说明；GPU 方案会改变环境渲染采样，可能产生可见伪影。" -f $pl.Changes.Count) }
+  }
+  $preview.Add_Click($makePlan)
+  $combo.Add_SelectedIndexChanged($makePlan)
+  $apply.Add_Click({
+    if($null -eq $state.Plan -or $state.Plan.Changes.Count -eq 0){ return }
+    $check=Test-ChangeSet $state.Text $state.Plan.Changes
+    if(-not $check.Valid){ [Windows.Forms.MessageBox]::Show(($check.Errors -join "`r`n"),'配置验证失败','OK','Warning') | Out-Null; return }
+    $msg="即将修改以下参数：`r`n"+(($state.Plan.Changes | ForEach-Object { "$($_.Key): $($_.From) -> $($_.To)" }) -join "`r`n")+"`r`n`r`n是否继续？"
+    if([Windows.Forms.MessageBox]::Show($msg,'确认应用','YesNo','Warning') -ne 'Yes'){ return }
+    $ok=Apply-Changes $path $state.Text $state.Plan.Changes
+    if($ok){ [Windows.Forms.MessageBox]::Show('配置已应用并通过回读校验。','完成','OK','Information') | Out-Null; & $makePlan }
+    else { [Windows.Forms.MessageBox]::Show('应用失败或未通过校验，请查看命令行窗口。','失败','OK','Error') | Out-Null }
+  })
+  $manual.Add_Click({ try { Start-Process $ManualUrl } catch { [Windows.Forms.MessageBox]::Show("无法打开参数手册：$_",'打开失败','OK','Warning') | Out-Null } })
+  $repo.Add_Click({ try { Start-Process $RepoUrl } catch {} })
+  $close.Add_Click({$form.Close()})
+  & $makePlan
+  [void]$form.ShowDialog()
 }
 
 function Show-View([string]$text,[object]$hw,[array]$dups){
@@ -678,63 +843,80 @@ function Manage-Backups([string]$path){
   }
 }
 
-function Select-TierApply([string]$text,[object]$hw){
-  Write-Host ''
-  Write-Host '按分级批量套用参考值：'
-  for($i=0;$i -lt $TierOrder.Count;$i++){
-    $t=$TierOrder[$i]
-    $n=@($Params | Where-Object { $_.Tier -eq $t }).Count
-    $tag=if($t -eq 'TRADEOFF'){ '（本档均为画面项，不参与批量）' }else{ '' }
-    Write-Host ("  [{0}] {1}  共 {2} 项{3}" -f ($i+1),(Pad $TierTag[$t] 16),$n,$tag)
+function Edit-Locate([string]$path,[string]$text,[object]$hw){
+  $work=$text
+  $changes=@()
+  while($true){
+    Write-Host ''
+    Write-Host '输入 参数名 / 编号 / 中文关键词 / 数值（当前值、默认值或参考值）定位，q 完成并退出'
+    $s=Read-Key '定位'
+    if($s -eq 'q'){ break }
+    if([string]::IsNullOrWhiteSpace($s)){ continue }
+    $s=$s.Trim()
+    $found=@()
+    $n=0
+    if([int]::TryParse($s,[ref]$n) -and $n -ge 1 -and $n -le $Params.Count){ $found=@($Params[$n-1]) }
+    else {
+      $found=@($Params | Where-Object {
+        $cur=Get-Val $work $_.Key
+        $ov=(Get-LocalSuggest $_ $hw).V
+        $hay=($_.Key+' '+$_.Note+' '+$_.Impact+' '+$_.Cond+' '+$_.Src+' '+$TierTag[$_.Tier]+' '+$_.Default+' '+$_.Suggest+' '+$(if($null -ne $cur){$cur}else{''})+' '+$(if($null -ne $ov){$ov}else{''}))
+        $hay.IndexOf($s,[StringComparison]::OrdinalIgnoreCase) -ge 0
+      })
+    }
+    if($found.Count -eq 0){ Write-Host '没有匹配的参数'; continue }
+    if($found.Count -gt 12){ Write-Host ("匹配 {0} 项，只显示前 12 项；请缩小范围。" -f $found.Count); $found=@($found | Select-Object -First 12) }
+    Write-Host ''
+    Write-Host '   #   类型       参数                              当前         参考        影响'
+    for($i=0;$i -lt $found.Count;$i++){
+      $pp=$found[$i]
+      $c0=Get-Val $work $pp.Key
+      $c0s=if($null -eq $c0){'(无)'}else{$c0}
+      $o0=(Get-LocalSuggest $pp $hw).V
+      $o0s=if($null -eq $o0){'-'}else{$o0}
+      Write-Host ("  [{0,2}] {1} {2} {3} {4} {5}" -f ($i+1),(Pad $TierTag[$pp.Tier] 11),(Pad $pp.Key 34),(Pad (Fmt-Val $c0s) 13),(Pad (Fmt-Val $o0s) 12),$pp.Impact)
+    }
+    $pick=Read-Key '输入编号选中，回车返回上层，q 完成退出'
+    if($pick -eq 'q'){ break }
+    if([string]::IsNullOrWhiteSpace($pick)){ continue }
+    $pi=0
+    if(-not [int]::TryParse($pick,[ref]$pi) -or $pi -lt 1 -or $pi -gt $found.Count){ Write-Host '编号无效'; continue }
+    $pp=$found[$pi-1]
+    $cur=Get-Val $work $pp.Key
+    if($null -eq $cur){ Write-Host '文件中不存在该键'; continue }
+    $ls=Get-LocalSuggest $pp $hw
+    $ov=$ls.V
+    $ovs=if($null -eq $ov){'-'}else{(Fmt-Val $ov)}
+    Write-Host ''
+    Write-Host ("{0} {1}" -f $TierTag[$pp.Tier],$pp.Key)
+    Write-Host ("  定义: {0}" -f $pp.Note)
+    Write-Host ("  影响: {0}   置信: {1}   依据: {2}" -f $pp.Impact,$pp.Conf,$pp.Src)
+    Write-Host ("  适用条件: {0}" -f $pp.Cond)
+    Write-Host ("  当前 {0} / 默认 {1} / 参考 {2}" -f (Fmt-Val $cur),(Fmt-Val $pp.Default),$ovs)
+    $hint='  输入新值'
+    if($null -ne $ov){ $hint=$hint+' / y 参考值' }
+    $hint=$hint+' / r 默认值 / 回车取消'
+    $inv=Read-Key $hint
+    if([string]::IsNullOrWhiteSpace($inv)){ continue }
+    $v=$inv
+    if($inv -eq 'y'){
+      if($null -eq $ov){ Write-Host '  该项无参考值'; continue }
+      $v=$ov
+    }
+    elseif($inv -eq 'r'){ $v=$pp.Default }
+    if(-not (Test-Val $v $pp.Default)){ Write-Host ("  值与类型不符，已取消。默认值格式: {0}" -f $pp.Default); continue }
+    if($v -eq $cur){ Write-Host '  值未变化'; continue }
+    $r=Set-Val $work $pp.Key $v
+    $work=$r.Text
+    $ex=@($changes | Where-Object { $_.Key -eq $pp.Key })
+    if($ex.Count -gt 0){ $ex[0].To=$v }
+    else{ $changes+=[pscustomobject]@{Key=$pp.Key;From=$cur;To=$v;Tier=$pp.Tier;Cond=$pp.Cond} }
+    Write-Host ("  已暂存 {0}: {1} -> {2}（输入 q 退出后统一写入）" -f $pp.Key,(Fmt-Val $cur),(Fmt-Val $v))
   }
-  $s=Read-Key '输入编号，q 取消'
-  if($s -eq 'q'){ return @() }
-  $n=0
-  if(-not [int]::TryParse($s,[ref]$n) -or $n -lt 1 -or $n -gt $TierOrder.Count){ Write-Host '编号无效'; return @() }
-  $tier=$TierOrder[$n-1]
-  if($tier -eq 'TRADEOFF'){ Write-Host '该档全部为画面项，不参与批量；请使用逐项修改。'; return @() }
-  $changes=@(); $absent=@(); $noRef=@()
-  foreach($p in @($Params | Where-Object { $_.Tier -eq $tier })){
-    $ls=Get-LocalSuggest $p $hw
-    if($ls.V -eq '-'){ $noRef+=$p.Key; continue }
-    $cur=Get-Val $text $p.Key
-    if($null -eq $cur){ $absent+=$p.Key; continue }
-    if($ls.V -ne $cur){ $changes+=[pscustomobject]@{Key=$p.Key;From=$cur;To=$ls.V;Tier=$p.Tier;Cond=$p.Cond} }
+  if($changes.Count -gt 0){
+    if(Confirm-Write $changes 'locate'){ Apply-Changes $path $text $changes }
   }
-  if($absent.Count -gt 0){ Write-Host ("文件中不存在的键已跳过: {0}" -f ($absent -join ', ')) }
-  if($noRef.Count -gt 0){ Write-Host ("无统一参考值的项已跳过: {0}" -f ($noRef -join ', ')) }
-  return $changes
-}
-
-function Get-AutoChanges([string]$text,[object]$hw){
-  $changes=@(); $excluded=@(); $absent=@()
-  foreach($p in $Params){
-    if($p.Tier -eq 'HWSPEC' -or $p.Tier -eq 'CAUTION'){ $excluded+=$p.Key; continue }
-    $ls=Get-LocalSuggest $p $hw
-    if($ls.V -eq '-'){ $excluded+=$p.Key; continue }
-    $cur=Get-Val $text $p.Key
-    if($null -eq $cur){ $absent+=$p.Key; continue }
-    if($ls.V -ne $cur){ $changes+=[pscustomobject]@{Key=$p.Key;From=$cur;To=$ls.V;Tier=$p.Tier;Cond=$p.Cond} }
-  }
-  Write-Host ("批量套用已排除 {0} 项（[硬件]/[风险]、画面项、推测/猜测不参与批量）" -f $excluded.Count)
-  if($absent.Count -gt 0){ Write-Host ("文件中不存在的键 {0} 项，已跳过" -f $absent.Count) }
-  return $changes
-}
-
-function Get-DryRun([string]$path,[string]$text,[array]$changes){
-  Write-Host ''
-  Write-Host '==== 干跑预览（不写入）===='
-  foreach($c in $changes){ Write-Host ("  {0} {1} {2} -> {3}" -f (Pad $TierTag[$c.Tier] 16),(Pad $c.Key 46),(Pad (Fmt-Val $c.From) 14),(Fmt-Val $c.To)) }
-  $new=$text
-  foreach($c in $changes){ $r=Set-Val $new $c.Key $c.To; $new=$r.Text }
-  $rawA=Get-Raw $path
-  $rawB=$Latin.GetBytes($new)
-  $d=Get-ByteDiff $rawA $rawB
-  Write-Host ("  改动范围: 变化 {0} 行，行号 {1}，长度 {2} -> {3}" -f $d.Lines,$d.LineNums,$d.LenA,$d.LenB)
-  Write-Host ("  CRLF {0} -> {1}  BOM {2} -> {3}" -f $d.CRLF_A,$d.CRLF_B,$d.BOM_A,$d.BOM_B)
-  $combos=Get-ComboWarnings $new
-  foreach($w in $combos){ Write-Host ("  警告: {0}" -f $w) }
-  Write-Host '文件未修改。'
+  else{ Write-Host '没有暂存的改动。' }
 }
 
 # ===== 主流程 =====
@@ -759,7 +941,11 @@ if($text0 -notmatch 'stingray_version|project_name'){
   $go=Read-Key '仍要继续? y/N'
   if($go -ne 'y'){ exit 0 }
 }
-Write-Host '按字节流读写，保留编码、换行与行尾注释；修改前自动备份。'
+Write-Host ("{0}：命令行 + Windows 图形界面；仅写入当前 settings.ini。" -f $ToolVersion)
+Write-Host ("参数库：{0} 项可编辑参数；在线手册：121 项 / 10 组（基准 build {1}）。按 h 打开。" -f $Params.Count,$ManualBaselineBuild)
+Write-Host '硬件检测用于提供参考，不代表已识别游戏运行时实际使用的 GPU。所有方案均先预览、校验，再备份写入。'
+$iniBuild=Get-Val $text0 'build'
+if($iniBuild){ Write-Host ("配置记录 build：{0}；参数手册基准 build：{1}。版本不同不代表参数必然失效，但需重新核对。" -f $iniBuild,$ManualBaselineBuild); if($iniBuild -ne $ManualBaselineBuild){ Write-Host '注意：当前配置 build 与手册基准不同，请不要把历史参考值视为当前版本已验证结论。' } }
 
 while($true){
   $text=Get-IniText $path
@@ -768,14 +954,28 @@ while($true){
   Show-Warnings $dups $combos
   Write-Host ''
   Write-Host '==== 菜单 ===='
-  Write-Host '  回车  逐项修改          a  批量套用参考值（排除高风险/画面/依据不足）'
-  Write-Host '  t     按分级批量         d  干跑预览（不写入）'
-  Write-Host '  v     参数总览           ?  查定义与影响（支持中文）'
+  Write-Host '  o     一键优化中心（CLI）  g  图形优化中心（GUI）'
+  Write-Host '  回车  逐项修改          m  按值/名称定位并直接修改'
+  Write-Host '  v     内置参数总览       ?  查定义与影响（支持中文）       h  打开完整参数手册（121项）'
   Write-Host '  s     导出只读快照       e  导出预设           i  导入预设'
   Write-Host '  b     备份管理（列/删/清理/还原）          q  退出'
   $mode=Read-Key '选择'
   if($mode -eq 'q'){ break }
+  if($mode -eq 'g'){ Start-OptimizerGui $path $hw; continue }
+  if($mode -eq 'o'){
+    Write-Host '' '优化方案：'
+    Write-Host '  1 综合维护（减少详细日志写入，不承诺 FPS 提升）'
+    Write-Host '  2 GPU 画质/性能取舍（降低两项环境采样，可能出现伪影）'
+    Write-Host '  3 帧时间稳定性（推测级参数不自动写入）'
+    Write-Host '  4 CPU 并行度（需运行时 CPU Sets/亲和性信息，当前不盲改）'
+    Write-Host '  5 画质保留（不主动降低渲染质量）'
+    $op=Read-Key '选择方案，回车返回'
+    $map=@{'1'='balanced';'2'='fps';'3'='frametime';'4'='cpu';'5'='quality'}
+    if($map.ContainsKey($op)){ Invoke-Optimizer $path (Get-IniText $path) $hw $map[$op] | Out-Null }
+    continue
+  }
   if($mode -eq '?'){ Show-Detail $text $hw; continue }
+  if($mode -eq 'h'){ try { Start-Process $ManualUrl } catch { Write-Host ("无法打开网页：{0}" -f $_.Exception.Message) }; continue }
   if($mode -eq ''){
     $changes=@()
     Write-Host ''
@@ -816,21 +1016,7 @@ while($true){
     if(Confirm-Write $changes 'manual'){ Apply-Changes $path $text $changes; break }
     continue
   }
-  if($mode -eq 'a'){
-    $ch=Get-AutoChanges $text $hw
-    if(Confirm-Write $ch 'auto'){ Apply-Changes $path $text $ch; break }
-    continue
-  }
-  if($mode -eq 't'){
-    $ch=Select-TierApply $text $hw
-    if(Confirm-Write $ch 'tier'){ Apply-Changes $path $text $ch; break }
-    continue
-  }
-  if($mode -eq 'd'){
-    $ch=Get-AutoChanges $text $hw
-    Get-DryRun $path $text $ch
-    continue
-  }
+  if($mode -eq 'm'){ Edit-Locate $path $text $hw; continue }
   if($mode -eq 'v'){ Show-View $text $hw $dups; continue }
   if($mode -eq 's'){ Save-Snapshot $path $text $hw $dups $combos; continue }
   if($mode -eq 'e'){ Export-Preset $path $text; continue }
@@ -839,5 +1025,6 @@ while($true){
   Write-Host '无效选择'
 }
 Write-Host ''
-Write-Host ('本工具不干预 user_settings.config，不触碰保护项（{0}）。' -f ($Protected -join ' / '))
+Write-Host ('本工具仅修改 settings.ini；不干预 user_settings.config，不触碰保护项（{0}）。' -f ($Protected -join ' / '))
+Write-Host ("完整参数说明：{0}" -f $ManualUrl)
 Write-Host ''
